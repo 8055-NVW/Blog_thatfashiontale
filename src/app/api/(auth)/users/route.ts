@@ -4,7 +4,7 @@ import User from "@lib/modals/user";
 import { Types } from "mongoose";
 
 // This will be used in the PATCH request to confirm the correct userId before proceeding(mongoose)
-const ObjectId = require("mongoose").Types.ObjectId;
+const ObjectId = Types.ObjectId;
 
 export const GET = async () => {
     try {
@@ -68,7 +68,7 @@ export const PATCH = async (request: Request) => {
         }
 
         return new NextResponse(
-            JSON.stringify({ massage: "Success. User Updated", user: updatedUser }),
+            JSON.stringify({ message: "Success. User Updated", user: updatedUser }),
             { status: 200 }
         )
     } catch (error: any) {
@@ -89,6 +89,7 @@ export const DELETE = async (request: Request) => {
                 { status: 400 })
         }
 
+        
         if (!Types.ObjectId.isValid(userId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid user ID" }),
@@ -114,7 +115,8 @@ export const DELETE = async (request: Request) => {
         )
 
     } catch (error: any) {
-        return new NextResponse("Error in deleting user -") + error.message,
-            { status: 500 }
+        return new NextResponse("Error in deleting user - " + error.message, {
+            status: 500,
+        });
     }
 }
