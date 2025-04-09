@@ -5,7 +5,8 @@ interface User {
     username: string;
     password?: string;
     image?: string;
-    googleId?: string; 
+    googleId?: string;
+    is_superuser?: boolean; 
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -17,6 +18,7 @@ const UserSchema = new Schema(
         password: { type: String, required: true },
         image: {type: String, default: '../../public/profile_placeholder.png'},
         googleId: { type: String },
+        is_superuser: { type: Boolean, default: false}
     },
     {
         timestamps: true,
