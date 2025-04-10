@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import connect from "@lib/db";
-import User from "@lib/modals/user";
-import { Types } from "mongoose";
+import User from "@lib/modals/User";
+import mongoose, { Types } from "mongoose";
+
 
 // This will be used in the PATCH request to confirm the correct userId before proceeding(mongoose)
 const ObjectId = Types.ObjectId;
@@ -89,7 +90,7 @@ export const DELETE = async (request: Request) => {
                 { status: 400 })
         }
 
-        
+
         if (!Types.ObjectId.isValid(userId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid user ID" }),
