@@ -50,19 +50,39 @@ export const POST = async (request: Request) => {
 }
 
 
-//update category
 export const PATCH = async (request: Request) => {
- try {
-    const body = await request.json()
-    
+    try {
+        const body = await request.json();
+        await connect();
+        const { identifier, newName, newSlug, newDescription } = body; 
+        const filter = { slug: identifier };
+        
+        const update = {
+            name: newName,
+            slug: newSlug,
+            description: newDescription,
+        };
+        const updatedCategory = await Category.findOneAndUpdate(
+            filter,
+            update,
+            { new: true }
+        );
 
-    
- } catch (error: any) {
-    return new NextResponse(
-        JSON.stringify(`Failed to update category - ${error.message}`),
-        { status: 500 }
-    )
- }
-}
+        if (!updatedCategory) {
+            return new NextResponse(JSON.stringify({ message: "Category not found" }), { status: 404 });
+        }
+
+        return new NextResponse(
+            JSON.stringify({ message: "Category successfully updated", category: updatedCategory }),
+            { status: 200 }
+        );
+
+    } catch (error: any) {
+        return new NextResponse(
+            JSON.stringify(`Failed to update category - ${error.message}`),
+            { status: 500 }
+        );
+    }
+};
 
 //delete category
