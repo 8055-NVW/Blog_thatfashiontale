@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server"
 import connect from "@lib/db";
-import User from "@lib/modals/User";
 import Category from "@lib/modals/Category";
-import { Types } from "mongoose";
 
 
-
-//view category
+//VIEW categories
 export const GET = async () => {
     try {
         await connect()
@@ -19,7 +16,7 @@ export const GET = async () => {
     }
 }
 
-//create category
+//CREATE category
 export const POST = async (request: Request) => {
     try {
         const body = await request.json()
@@ -40,6 +37,7 @@ export const POST = async (request: Request) => {
             JSON.stringify({ message: "Category successfully created", category: newCategory }),
             { status: 201 }
         )
+
         
     } catch (error: any) {
         return new NextResponse(
@@ -49,7 +47,7 @@ export const POST = async (request: Request) => {
     }
 }
 
-
+//UPDATE Category
 export const PATCH = async (request: Request) => {
     try {
         const body = await request.json();
@@ -85,8 +83,7 @@ export const PATCH = async (request: Request) => {
     }
 };
 
-//delete category
-
+//DELETE category
 export const DELETE = async (request : Request) => {
     try {
         const {categoryId} = await request.json();
