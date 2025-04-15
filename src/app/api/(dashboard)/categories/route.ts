@@ -86,3 +86,32 @@ export const PATCH = async (request: Request) => {
 };
 
 //delete category
+
+export const DELETE = async (request : Request) => {
+    try {
+        const {categoryId} = await request.json();
+        await connect();
+
+
+
+        if (!categoryId) {
+            return new NextResponse(
+                JSON.stringify({ message: "Id not found" }),
+                { status: 400 })
+        }
+
+        const deletedCategory = await Category.findByIdAndDelete(categoryId);
+
+        return new NextResponse(
+            JSON.stringify({ message: "Category successfully deleted", category: deletedCategory }),
+            { status: 200 }
+        )
+
+        
+    } catch (error: any) {
+        return new NextResponse(
+            JSON.stringify(`Failed to update category - ${error.message}`),
+            { status: 500 }
+        );
+    }
+}
