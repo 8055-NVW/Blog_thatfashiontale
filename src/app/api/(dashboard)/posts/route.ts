@@ -24,17 +24,16 @@ export const GET = async (request: Request) => {
 
         if (categoryId) {
             const category = await Category.findById(categoryId);
-            
+
             if (!category) {
                 return new NextResponse(
                     JSON.stringify({ message: "Category not found" }),
                     { status: 404 }
                 );
             }
-            
+
             filter.category = new Types.ObjectId(categoryId);
         }
-
         const posts = await Post.find(filter);
 
         return new NextResponse(JSON.stringify({ posts }), { status: 200 });
@@ -53,8 +52,17 @@ export const POST = async (request: Request) => {
 
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get("categoryId");
+        const userId = searchParams.get("userId")
+
         const body = await request.json()
         const { title, slug, content } = body;
+
+        if (!userId || !Types.ObjectId.isValid(userId)) {
+            return new NextResponse(
+                JSON.stringify({ message: " Invalid or missing userId" }),
+                { status: 400 }
+            )
+        }
 
         if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
             return new NextResponse(
@@ -71,6 +79,24 @@ export const POST = async (request: Request) => {
         }
 
         await connect();
+
+        const user = await User.findById(userId)
+
+        if (!user) {
+            return new NextResponse(
+                JSON.stringify({ message: "User not found" }),
+                { status: 404 }
+            )
+        }
+
+        const category = await Category.findById(categoryId)
+
+        if (!category) {
+            return new NextResponse(
+                JSON.stringify({ message: "Category not found" }),
+                { status: 404 }
+            )
+        }
 
         const newPost = new Post({
             title,
