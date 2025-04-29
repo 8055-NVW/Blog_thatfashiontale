@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
 import connect from "@lib/db";
 import Post from "@lib/modals/Post";
-import Category from "@lib/modals/Category";
 import { Types } from "mongoose";
+import Category from "@lib/modals/Category";
+import User from "@lib/modals/User";
 
 
 //VIEW posts
@@ -11,37 +12,56 @@ export const GET = async (request: Request) => {
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get("categoryId");
 
-        if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
-            return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing categoryId"}),
-                {status : 400}
-            )
-        }
         await connect();
-        
+        const filter: any = {};
 
-        //!logic to filter by category
-        const filter: any ={
-            category: new Types.ObjectId(categoryId)
+        if (categoryId && !Types.ObjectId.isValid(categoryId)) {
+            return new NextResponse(
+                JSON.stringify({ message: "Invalid categoryId format" }),
+                { status: 400 }
+            );
+        }
+
+        if (categoryId) {
+            const category = await Category.findById(categoryId);
+            
+            if (!category) {
+                return new NextResponse(
+                    JSON.stringify({ message: "Category not found" }),
+                    { status: 404 }
+                );
+            }
+            
+            filter.category = new Types.ObjectId(categoryId);
         }
 
         const posts = await Post.find(filter);
 
-        return new NextResponse(JSON.stringify({posts}), { status: 200 })
+        return new NextResponse(JSON.stringify({ posts }), { status: 200 });
 
     } catch (error: any) {
-        return new NextResponse("Failed to get posts -" + error.message,
+        return new NextResponse(
+            JSON.stringify({ message: "Failed to get posts", error: error.message }),
             { status: 500 }
-        )
+        );
     }
 }
 
 //CREATE
 export const POST = async (request: Request) => {
     try {
+
+        const { searchParams } = new URL(request.url);
+        const categoryId = searchParams.get("categoryId");
         const body = await request.json()
         const { title, slug, content } = body;
-        await connect();
+
+        if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
+            return new NextResponse(
+                JSON.stringify({ message: "Invalid or missing categoryId" }),
+                { status: 400 }
+            )
+        }
 
         if (!title || !slug || !content) {
             return new NextResponse(
@@ -50,7 +70,14 @@ export const POST = async (request: Request) => {
             );
         }
 
-        const newPost = new Post({ title, slug, content })
+        await connect();
+
+        const newPost = new Post({
+            title,
+            slug,
+            content,
+            category: new Types.ObjectId(categoryId),
+        })
         await newPost.save();
 
         return new NextResponse(
