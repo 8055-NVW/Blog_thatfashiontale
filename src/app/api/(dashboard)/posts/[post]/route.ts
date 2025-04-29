@@ -105,7 +105,7 @@ export const PATCH = async (request: Request, context: {params: any}) => {
         if(!user.is_superuser){
             return new NextResponse(
                 JSON.stringify({ message: "Permission denied "}),
-                { status: 401}
+                { status: 403}
             )
         }
 
@@ -135,10 +135,70 @@ export const PATCH = async (request: Request, context: {params: any}) => {
         return new NextResponse(
             JSON.stringify({ message: "Failed to update post", error: error.message }),
             { status: 500 }
-        );
-        
+        );       
     }
  }
 
 
 //DELETE
+export const DELETE = async (request: Request, context: {params: any}) => {
+    try {
+        const params = await context.params;
+        const postId = params.post;
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get("userId")
+
+        if (!userId || !Types.ObjectId.isValid(userId)) {
+            return new NextResponse(
+                JSON.stringify({ message: " Invalid or missing userId" }),
+                { status: 400 }
+            )
+        }
+
+        if (!postId || !Types.ObjectId.isValid(postId)) {
+            return new NextResponse(
+                JSON.stringify({ message: "Invalid or missing postId" }),
+                { status: 400 }
+            )
+        }
+
+        await connect()
+
+        const user = await User.findById(userId)
+
+        if (!user) {
+            return new NextResponse(
+                JSON.stringify({ message: "User not found" }),
+                { status: 404 }
+            )
+        }
+
+        if(!user.is_superuser){
+            return new NextResponse(
+                JSON.stringify({ message: "Permission denied "}),
+                { status: 403}
+            )
+        }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return new NextResponse(
+                JSON.stringify({ message: "Post not found" }),
+                { status: 404 }
+            );
+        }
+        
+        await Post.findByIdAndDelete(postId);
+
+        return new NextResponse(
+            JSON.stringify({ message: "Post deleted"}),
+            { status: 200 }
+        );
+        
+    } catch (error: any) {
+        return new NextResponse(
+            JSON.stringify({ message: "Failed to delete post", error: error.message }),
+            { status: 500 }
+        );        
+    }
+}

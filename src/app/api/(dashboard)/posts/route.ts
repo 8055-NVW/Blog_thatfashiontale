@@ -34,6 +34,8 @@ export const GET = async (request: Request) => {
 
             filter.category = new Types.ObjectId(categoryId);
         }
+
+        
         const posts = await Post.find(filter);
 
         return new NextResponse(JSON.stringify({ posts }), { status: 200 });
