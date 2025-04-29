@@ -11,16 +11,29 @@ export const GET = async (request: Request) => {
     try {
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get("categoryId");
-
-        await connect();
+        const searchKeywords = searchParams.get("keywords") as string;
         const filter: any = {};
 
+        if(searchKeywords) {
+            filter.$or = [
+                {
+                    title: { $regex: searchKeywords, $options: "i"},
+                },
+                {
+                    content: { $regex: searchKeywords, $options: "i"},
+                }
+            ]
+        }
+        
         if (categoryId && !Types.ObjectId.isValid(categoryId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid categoryId format" }),
                 { status: 400 }
             );
         }
+
+
+        await connect();
 
         if (categoryId) {
             const category = await Category.findById(categoryId);
@@ -34,8 +47,8 @@ export const GET = async (request: Request) => {
 
             filter.category = new Types.ObjectId(categoryId);
         }
-
         
+
         const posts = await Post.find(filter);
 
         return new NextResponse(JSON.stringify({ posts }), { status: 200 });
