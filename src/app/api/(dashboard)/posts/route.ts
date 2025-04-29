@@ -49,11 +49,9 @@ export const GET = async (request: Request) => {
 //CREATE
 export const POST = async (request: Request) => {
     try {
-
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get("categoryId");
         const userId = searchParams.get("userId")
-
         const body = await request.json()
         const { title, slug, content } = body;
 
@@ -63,6 +61,8 @@ export const POST = async (request: Request) => {
                 { status: 400 }
             )
         }
+
+
 
         if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
             return new NextResponse(
@@ -89,6 +89,13 @@ export const POST = async (request: Request) => {
             )
         }
 
+        if(!user.is_superuser){
+            return new NextResponse(
+                JSON.stringify({ message: "Permission denied "}),
+                { status: 401}
+            )
+        }
+
         const category = await Category.findById(categoryId)
 
         if (!category) {
@@ -103,6 +110,7 @@ export const POST = async (request: Request) => {
             slug,
             content,
             category: new Types.ObjectId(categoryId),
+            user: new Types.ObjectId(userId)
         })
         await newPost.save();
 
