@@ -62,8 +62,6 @@ export const POST = async (request: Request) => {
             )
         }
 
-
-
         if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid or missing categoryId" }),
@@ -126,7 +124,3 @@ export const POST = async (request: Request) => {
         )
     }
 }
-
-//UPDATE
-
-//DELETE
