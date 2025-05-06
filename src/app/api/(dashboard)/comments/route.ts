@@ -4,8 +4,8 @@ import Post from "@lib/modals/Post";
 import Comment from "@lib/modals/Comment";
 import { Types } from "mongoose";
 
-// View all Comments
-export const GET = async (request: Request) => {
+//GET Comments
+export const GET = async (request: Request, context: {params: any}) => {
     try {
         const { searchParams } = new URL(request.url);
         const postId = searchParams.get("postId");
@@ -45,4 +45,6 @@ export const GET = async (request: Request) => {
     }
 }
 
-//Create Comment
+//POST Comment
+
+export const POST
