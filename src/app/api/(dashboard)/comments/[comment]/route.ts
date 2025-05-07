@@ -45,14 +45,15 @@ export const DELETE = async (request: Request, context: { params: any }) => {
             );
         }
 
-        if (user != comment.user._id) {
+        if (!comment.user.equals(userId)) {
             return new NextResponse(
-                JSON.stringify({ message: "Permission denied" }),
-                { status: 404 }
+                JSON.stringify({ message: "Permission denied: Only the comment author can delete this comment" }),
+                { status: 403 }
             );
         }
 
         await Comment.findByIdAndDelete(commentId);
+
         return new NextResponse(
             JSON.stringify({ message: "Comment deleted"}),
             { status: 200 }
