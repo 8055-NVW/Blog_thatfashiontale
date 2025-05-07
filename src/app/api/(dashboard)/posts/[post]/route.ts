@@ -71,7 +71,7 @@ export const PATCH = async (request: Request, context: {params: any}) => {
 
         if (!userId || !Types.ObjectId.isValid(userId)) {
             return new NextResponse(
-                JSON.stringify({ message: " Invalid or missing userId" }),
+                JSON.stringify({ message: "Invalid or missing userId" }),
                 { status: 400 }
             )
         }
@@ -104,7 +104,7 @@ export const PATCH = async (request: Request, context: {params: any}) => {
 
         if(!user.is_superuser){
             return new NextResponse(
-                JSON.stringify({ message: "Permission denied "}),
+                JSON.stringify({ message: "Permission denied"}),
                 { status: 403}
             )
         }
@@ -150,7 +150,7 @@ export const DELETE = async (request: Request, context: {params: any}) => {
 
         if (!userId || !Types.ObjectId.isValid(userId)) {
             return new NextResponse(
-                JSON.stringify({ message: " Invalid or missing userId" }),
+                JSON.stringify({ message: "Invalid or missing userId" }),
                 { status: 400 }
             )
         }
@@ -175,7 +175,7 @@ export const DELETE = async (request: Request, context: {params: any}) => {
 
         if(!user.is_superuser){
             return new NextResponse(
-                JSON.stringify({ message: "Permission denied "}),
+                JSON.stringify({ message: "Permission denied"}),
                 { status: 403}
             )
         }
