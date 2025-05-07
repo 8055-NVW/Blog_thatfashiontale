@@ -8,8 +8,6 @@ import User from "@lib/modals/User";
 //GET Comments
 export const GET = async (request: Request, context: { params: any }) => {
     try {
-        // const { searchParams } = new URL(request.url);
-        // const postId = searchParams.get("postId");
         const postId = await context.params.post;
         const filter: any = {};
 
@@ -23,8 +21,8 @@ export const GET = async (request: Request, context: { params: any }) => {
         await connect()
 
         if (postId) {
+            
             const post = await Post.findById(postId);
-
             if (!post) {
                 return new NextResponse(
                     JSON.stringify({ message: "Post not found" }),

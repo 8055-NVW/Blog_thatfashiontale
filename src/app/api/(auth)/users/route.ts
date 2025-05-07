@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import connect from "@lib/db";
 import User from "@lib/modals/User";
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 
 
 // This will be used in the PATCH request to confirm the correct userId before proceeding(mongoose)
