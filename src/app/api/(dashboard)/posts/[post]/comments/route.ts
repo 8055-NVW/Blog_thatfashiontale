@@ -36,7 +36,7 @@ export const GET = async (request: Request, context: { params: any }) => {
         }
 
         const comments = await Comment.find(filter)
-            .populate('user', 'username image' )
+            .populate('user', 'username image')
             .sort({ createdAt: -1 });
 
         return new NextResponse(JSON.stringify({ comments }), { status: 200 })
@@ -63,25 +63,23 @@ export const POST = async (request: Request, context: { params: any }) => {
                 { status: 400 }
             )
         }
-
-        if (!content) {
-            return new NextResponse(
-                JSON.stringify({ message: "Missing required fields" }),
-                { status: 400 }
-            );
-        }
-
+        
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid or missing postId" }),
                 { status: 400 }
             )
         }
-
+        
+        if (!content) {
+            return new NextResponse(
+                JSON.stringify({ message: "Missing required fields" }),
+                { status: 400 }
+            );
+        }
         await connect()
 
         const user = await User.findById(userId)
-
         if (!user) {
             return new NextResponse(
                 JSON.stringify({ message: "User not found" }),
