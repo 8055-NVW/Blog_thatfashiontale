@@ -3,20 +3,20 @@ import Like from "@lib/modals/Like";
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
-// GET - Get like count for post
+// GET - Get like count for comment
 export const GET = async (request: Request, context: { params: any }) => {
     try {
-        const postId = await context.params.post
-        if (!postId || !Types.ObjectId.isValid(postId)) {
+        const commentId = await context.params.comment
+        if (!commentId || !Types.ObjectId.isValid(commentId)) {
             return new NextResponse(
-                JSON.stringify({ message: "Invalid postId" }),
+                JSON.stringify({ message: "Invalid commentId" }),
                 { status: 400 }
             );
         }
 
         await connect();
 
-        const count = await Like.countDocuments({ post: postId })
+        const count = await Like.countDocuments({ comment: commentId })
 
         return new NextResponse(
             JSON.stringify({ count }),
