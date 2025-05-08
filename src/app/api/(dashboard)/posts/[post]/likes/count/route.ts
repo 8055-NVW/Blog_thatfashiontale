@@ -1,6 +1,6 @@
 import connect from "@lib/db";
 import Like from "@lib/modals/Like";
-import Post from "@lib/modals/Post";
+
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
