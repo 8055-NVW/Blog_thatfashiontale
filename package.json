@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^3.9.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "mongodb": "^6.16.0",
     "mongoose": "^8.13.2",
