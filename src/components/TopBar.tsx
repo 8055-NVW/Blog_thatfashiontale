@@ -1,12 +1,13 @@
+"use client"
+
 export default function TopBar() {
     return (
         <>
-            <div>
-
+            {/* <div>
                 <input type="text" placeholder="Search..." />
-            </div>
+            </div> */}
             <div>
-                <link rel="stylesheet" href="" />
+                <link rel="stylesheet" href="/." />
             </div>
         </>
     )
