@@ -12,6 +12,8 @@
     "@auth/core": "^0.39.1",
     "@auth/mongodb-adapter": "^3.9.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@react-email/components": "^0.0.41",
+    "@react-email/render": "^1.1.2",
     "mongodb": "^6.16.0",
     "mongoose": "^8.13.2",
     "next": "15.2.4",
