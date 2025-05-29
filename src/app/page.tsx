@@ -90,7 +90,6 @@ import { SignInButton } from "@/components/SignInButton";
 import { auth } from "@/auth";
 import Image from "next/image";
 import { SignOutButton } from "@/components/SignOutButton";
-import { SignIn } from "@/components/SignIn";
 
 export default async function Home() {
   const session = await auth();
@@ -121,10 +120,6 @@ export default async function Home() {
       <div>
         <p>You are not Signed In</p>
         <SignInButton />
-      </div>
-      <div>
-        <h1>Magic Links</h1>
-        <SignIn/>
       </div>
     </>
   );
