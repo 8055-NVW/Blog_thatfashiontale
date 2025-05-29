@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import connect from "@lib/db";
-import User from "@lib/modals/User";
+import connect from "@/lib/mongoose";
+import User from "@/models/User";
 import { Types } from "mongoose";
 
 

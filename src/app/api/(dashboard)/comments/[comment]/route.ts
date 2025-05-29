@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
-import connect from "@lib/db";
-import Comment from "@lib/modals/Comment";
+import connect from "@/lib/mongoose";
+import Comment from "@/models/Comment";
 import { Types } from "mongoose";
-import User from "@lib/modals/User";
+import User from "@/models/User";
 
 //DELETE Comment
 export const DELETE = async (request: Request, context: { params: any }) => {

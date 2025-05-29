@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import connect from "@lib/db";
-import Post from "@lib/modals/Post";
-import Comment from "@lib/modals/Comment";
+import connect from "@/lib/mongoose";
+import Post from "@/models/Post";
+import Comment from "@/models/Comment";
 import { Types } from "mongoose";
-import User from "@lib/modals/User";
+import User from "@/models/User";
 
 //GET Comments
 export const GET = async (request: Request, context: { params: any }) => {

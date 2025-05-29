@@ -1,6 +1,5 @@
 "use client"
-
-import { logout } from "@/lib/actions/auth"
+import { logout } from "@/actions/authActions"
 
 export const SignOutButton = () => {
     return (

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import connect from "@lib/db";
-import Category from "@lib/modals/Category";
+import connect from "@/lib/mongoose";
+import Category from "@/models/Category";
 
 
 //VIEW categories
