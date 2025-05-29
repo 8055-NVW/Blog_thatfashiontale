@@ -28,7 +28,7 @@ export const GET = async (request: Request, context: { params: any }) => {
         }
 
         const replies = await Comment.find({ parent: commentId })
-            .populate("user", "username image")
+            .populate("user", "name image")
             .sort({ createdAt: 1 });
 
         return new NextResponse(
@@ -102,7 +102,7 @@ export const POST = async (request: Request, context: { params: any }) => {
 
         await newReply.save();
 
-        await newReply.populate("user", "username image");
+        await newReply.populate("user", "name image");
         
         return new NextResponse(
             JSON.stringify({

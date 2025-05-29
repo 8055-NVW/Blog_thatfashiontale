@@ -9,7 +9,8 @@ export const SignIn = () => {
       }}
     >
       <input type="text" name="email" placeholder="Email" />
-      <button type="submit">Signin with Resend</button>
+
+      <button type="submit">Sign in with Resend</button>
     </form>
   )
 }

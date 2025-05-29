@@ -1,4 +1,3 @@
-// src/emails/MagicLinkEmail.tsx
 import {
     Body,
     Container,

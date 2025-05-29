@@ -95,6 +95,10 @@ import { SignIn } from "@/components/SignIn";
 export default async function Home() {
   const session = await auth();
 
+  console.log("Session user:", session?.user);
+  // console.log("🔐 Server-side session:", session);
+
+
   if (session?.user) {
     return (
       <div>

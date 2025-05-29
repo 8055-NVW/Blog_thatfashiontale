@@ -18,34 +18,34 @@ export const GET = async () => {
     }
 }
 
-export const POST = async (request: Request) => {
-    try {
-        const body = await request.json();
-        await connect();
+// export const POST = async (request: Request) => {
+//     try {
+//         const body = await request.json();
+//         await connect();
 
-        if (!body.email || !body.username || !body.password) {
-            return new NextResponse("Missing required fields", { status: 400 });
-        }
-        const newUser = new User(body)
-        await newUser.save()
+//         if (!body.email || !body.name || !body.password) {
+//             return new NextResponse("Missing required fields", { status: 400 });
+//         }
+//         const newUser = new User(body)
+//         await newUser.save()
 
-        return new NextResponse(JSON.stringify({ message: "New user created", user: newUser })
-            , { status: 201 }
-        )
-    } catch (error: any) {
-        return new NextResponse("Failed to create new user : " + error.message, { status: 500 })
-    }
-}
+//         return new NextResponse(JSON.stringify({ message: "New user created", user: newUser })
+//             , { status: 201 }
+//         )
+//     } catch (error: any) {
+//         return new NextResponse("Failed to create new user : " + error.message, { status: 500 })
+//     }
+// }
 
 export const PATCH = async (request: Request) => {
     try {
         const body = await request.json()
-        const { userId, newUsername } = body;
+        const { userId, newname } = body;
         await connect();
 
-        if (!userId || !newUsername) {
+        if (!userId || !newname) {
             return new NextResponse(
-                JSON.stringify({ message: "Id or new Username not found" }),
+                JSON.stringify({ message: "Id or new name not found" }),
                 { status: 400 })
         }
 
@@ -57,7 +57,7 @@ export const PATCH = async (request: Request) => {
 
         const updatedUser = await User.findOneAndUpdate(
             { _id: new ObjectId(userId) },
-            { username: newUsername },
+            { name: newname },
             { new: true }
         )
 

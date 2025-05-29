@@ -34,7 +34,7 @@ export const GET = async (request: Request, context: { params: any }) => {
         }
 
         const comments = await Comment.find(filter)
-            .populate('user', 'username image')
+            .populate('user', 'name image')
             .sort({ createdAt: -1 });
 
         return new NextResponse(JSON.stringify({ comments }), { status: 200 })
