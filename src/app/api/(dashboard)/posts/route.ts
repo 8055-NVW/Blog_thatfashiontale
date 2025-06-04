@@ -9,7 +9,7 @@ import User from "@/models/User";
 export const GET = async (request: Request) => {
     try {
         const { searchParams } = new URL(request.url);
-        const categoryId = searchParams.get("categoryId");
+        // const categoryId = searchParams.get("categoryId");
         const searchKeywords = searchParams.get("keywords") as string;
         const filter: any = {};
 
@@ -24,28 +24,28 @@ export const GET = async (request: Request) => {
             ]
         }
 
-        if (categoryId && !Types.ObjectId.isValid(categoryId)) {
-            return new NextResponse(
-                JSON.stringify({ message: "Invalid categoryId format" }),
-                { status: 400 }
-            );
-        }
+        // if (categoryId && !Types.ObjectId.isValid(categoryId)) {
+        //     return new NextResponse(
+        //         JSON.stringify({ message: "Invalid categoryId format" }),
+        //         { status: 400 }
+        //     );
+        // }
 
 
         await connect();
 
-        if (categoryId) {
-            const category = await Category.findById(categoryId);
+        // if (categoryId) {
+        //     const category = await Category.findById(categoryId);
 
-            if (!category) {
-                return new NextResponse(
-                    JSON.stringify({ message: "Category not found" }),
-                    { status: 404 }
-                );
-            }
+        //     if (!category) {
+        //         return new NextResponse(
+        //             JSON.stringify({ message: "Category not found" }),
+        //             { status: 404 }
+        //         );
+        //     }
 
-            filter.category = new Types.ObjectId(categoryId);
-        }
+        //     filter.category = new Types.ObjectId(categoryId);
+        // }
 
         const posts = await Post.find(filter);
 
@@ -59,7 +59,6 @@ export const GET = async (request: Request) => {
     }
 }
 
-//CREATE
 export const POST = async (request: Request) => {
     try {
         const { searchParams } = new URL(request.url);
