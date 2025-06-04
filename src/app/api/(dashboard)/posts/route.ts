@@ -5,7 +5,6 @@ import { Types } from "mongoose";
 import Category from "@/models/Category";
 import User from "@/models/User";
 
-
 //VIEW posts
 export const GET = async (request: Request) => {
     try {
@@ -67,7 +66,7 @@ export const POST = async (request: Request) => {
         const categoryId = searchParams.get("categoryId");
         const userId = searchParams.get("userId")
         const body = await request.json()
-        const { title, slug, content } = body;
+        const { title, slug, content, image, hotspots } = body;
 
         if (!userId || !Types.ObjectId.isValid(userId)) {
             return new NextResponse(
@@ -116,12 +115,14 @@ export const POST = async (request: Request) => {
                 { status: 404 }
             )
         }
-
+        console.log("Hotspots received:", hotspots);
         const newPost = new Post({
             title,
             slug,
             content,
             category: new Types.ObjectId(categoryId),
+            image,
+            hotspots,
             user: new Types.ObjectId(userId)
         })
         await newPost.save();

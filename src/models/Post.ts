@@ -1,25 +1,30 @@
-import { Schema, model, models} from "mongoose"
+import { Schema, model, models } from "mongoose"
 import { PostType } from "@/types/PostType"
+
+const HotspotSchema = new Schema(
+    {
+        x: { type: Number, required: true },
+        y: { type: Number, required: true },
+        items: [
+            {
+                title: { type: String },
+                link: { type: String, required: true },
+                image: { type: String }
+            },
+        ],
+    },
+    { _id: false }
+);
 
 const PostSchema = new Schema<PostType>(
     {
         title: { type: String, required: true },
         slug: { type: String, required: true },
         content: { type: String, required: true },
+        user: { type: Schema.Types.ObjectId, ref: "User", required: true },
         category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
-        hotspots: [
-            {
-                x: {type: Number, required: true},
-                y: {type: Number, required: true},
-                items: [
-                    {
-                        title: {type: String},
-                        link: {type: String, required: true},
-                        image: {type: String}
-                    }
-                ]
-            }
-        ]
+        image: { type: String },
+        hotspots: [HotspotSchema],
     },
     {
         timestamps: true,
