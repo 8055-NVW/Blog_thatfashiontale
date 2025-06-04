@@ -1,16 +1,7 @@
-import {Schema, model, models, Types} from "mongoose"
+import {Schema, model, models} from "mongoose"
+import { CommentType } from "@/types/CommentType";
 
-interface Comment {
-    post: Types.ObjectId;
-    user: Types.ObjectId;
-    //added parent for nested replies
-    parent?: Types.ObjectId | null;
-    content: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-const CommentSchema = new Schema(
+const CommentSchema = new Schema<CommentType>(
     {
         post: {type: Schema.Types.ObjectId, ref: "Post", required: true},
         user: {type: Schema.Types.ObjectId, ref: "User", required: true},
@@ -22,7 +13,6 @@ const CommentSchema = new Schema(
         timestamps: true,
     }
 )
-
-const  Comment = models.Comment || model<Comment>("Comment", CommentSchema);
+const  Comment = models.Comment || model<CommentType>("Comment", CommentSchema);
 
 export default Comment

@@ -1,12 +1,7 @@
 import { Schema, models, model } from "mongoose"
+import { CategoryType } from "@/types/CategoryType";
 
-interface Category {
-    name: string;
-    slug: string;
-    description: string;
-}
-
-const CategorySchema = new Schema(
+const CategorySchema = new Schema<CategoryType>(
     {
         name:{type: String, required: true},
         slug: {type:String, required: true},
@@ -14,6 +9,6 @@ const CategorySchema = new Schema(
     },
 );
 
-const Category = models.Category || model<Category>('Category', CategorySchema);
+const Category = models.Category || model<CategoryType>('Category', CategorySchema);
 
 export default Category;

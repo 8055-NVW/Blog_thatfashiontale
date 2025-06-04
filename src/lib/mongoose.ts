@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-
-const MONGODB_URI = process.env.MONGODB_URI;
+import { env } from "@/config/env";
 
 const connect = async() => {
     const connectionState = mongoose.connection.readyState
@@ -9,14 +8,13 @@ const connect = async() => {
         console.log("already connected");
         return;
     }
-
     if(connectionState === 2) {
         console.log("connecting...");
         return;
     }
-
+    
     try {
-        mongoose.connect(MONGODB_URI!, {
+        mongoose.connect(env.MONGODB_URI!, {
             dbName: "next14blog",
             bufferCommands: true
         });

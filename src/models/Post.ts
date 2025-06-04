@@ -1,15 +1,7 @@
-import { Schema, model, models, Types } from "mongoose"
+import { Schema, model, models} from "mongoose"
+import { PostType } from "@/types/PostType"
 
-interface Post {
-    title: string;
-    slug: string;
-    content: string;
-    category: Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-const PostSchema = new Schema(
+const PostSchema = new Schema<PostType>(
     {
         title: { type: String, required: true },
         slug: { type: String, required: true },
@@ -21,6 +13,6 @@ const PostSchema = new Schema(
     }
 )
 
-const Post = models.Post || model<Post>("Post", PostSchema)
+const Post = models.Post || model<PostType>("Post", PostSchema)
 
 export default Post
