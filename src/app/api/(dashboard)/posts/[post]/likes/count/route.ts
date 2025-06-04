@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 // GET - Get like count for post
 export const GET = async (request: Request, context: { params: any }) => {
     try {
-        const postId = await context.params.post
+        const postId = context.params.post
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid postId" }),

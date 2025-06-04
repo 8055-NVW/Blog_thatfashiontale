@@ -13,17 +13,17 @@ export const GET = async (request: Request) => {
         const searchKeywords = searchParams.get("keywords") as string;
         const filter: any = {};
 
-        if(searchKeywords) {
+        if (searchKeywords) {
             filter.$or = [
                 {
-                    title: { $regex: searchKeywords, $options: "i"},
+                    title: { $regex: searchKeywords, $options: "i" },
                 },
                 {
-                    content: { $regex: searchKeywords, $options: "i"},
+                    content: { $regex: searchKeywords, $options: "i" },
                 }
             ]
         }
-        
+
         if (categoryId && !Types.ObjectId.isValid(categoryId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid categoryId format" }),
@@ -46,7 +46,7 @@ export const GET = async (request: Request) => {
 
             filter.category = new Types.ObjectId(categoryId);
         }
-        
+
         const posts = await Post.find(filter);
 
         return new NextResponse(JSON.stringify({ posts }), { status: 200 });
@@ -100,10 +100,10 @@ export const POST = async (request: Request) => {
             )
         }
 
-        if(!user.is_superuser){
+        if (!user.is_superuser) {
             return new NextResponse(
-                JSON.stringify({ message: "Permission denied "}),
-                { status: 401}
+                JSON.stringify({ message: "Permission denied " }),
+                { status: 401 }
             )
         }
 

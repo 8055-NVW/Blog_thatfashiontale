@@ -56,7 +56,7 @@ export const GET = async (request: Request, context: { params: any }) => {
 // POST: Like 
 export const POST = async (request: Request, context: { params: any }) => {
     try {
-      const postId = await context.params.post;
+      const postId = context.params.post;
       const { searchParams } = new URL(request.url);
       const userId = searchParams.get("userId");
   

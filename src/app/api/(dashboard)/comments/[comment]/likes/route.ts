@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 // GET: Check like status
 export const GET = async (request: Request, context: { params: any }) => {
     try {
-        const commentId = await context.params.comment;
+        const commentId = context.params.comment;
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
 
@@ -57,7 +57,7 @@ export const GET = async (request: Request, context: { params: any }) => {
 // POST: Like 
 export const POST = async (request: Request, context: { params: any }) => {
     try {
-        const commentId = await context.params.comment;
+        const commentId = context.params.comment;
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
 
@@ -119,7 +119,7 @@ export const POST = async (request: Request, context: { params: any }) => {
 // DELETE: Unlike
 export const DELETE = async (request: Request, context: { params: any }) => {
     try {
-        const commentId = await context.params.comment;
+        const commentId = context.params.comment;
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
 
