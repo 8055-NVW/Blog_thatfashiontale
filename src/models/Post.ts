@@ -6,7 +6,20 @@ const PostSchema = new Schema<PostType>(
         title: { type: String, required: true },
         slug: { type: String, required: true },
         content: { type: String, required: true },
-        category: { type: Schema.Types.ObjectId, ref: "Category", required: true }
+        category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+        hotspots: [
+            {
+                x: {type: Number, required: true},
+                y: {type: Number, required: true},
+                items: [
+                    {
+                        title: {type: String},
+                        link: {type: String, required: true},
+                        image: {type: String}
+                    }
+                ]
+            }
+        ]
     },
     {
         timestamps: true,
