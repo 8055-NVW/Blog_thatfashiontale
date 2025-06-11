@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PostWithCategory } from "@/types/PostViewType";
+import { deletePost } from "@/lib/api/posts";
 
 type Props = {
     categoryId?: string;
@@ -33,21 +34,11 @@ export default function PostsList({ categoryId }: Props) {
         fetchPosts();
     }, [categoryId]);
 
-    const getUserIdFromSession = async () => {
-        const res = await fetch("/api/me");
-        const json = await res.json();
-        console.log(json.id)
-        return json.id as string;
-    };
-
     const handleDelete = async (postId: string) => {
         if (!confirm("Delete this post?")) return;
 
         try {
-            const userId = await getUserIdFromSession();
-            const res = await fetch(`/api/posts/${postId}?userId=${userId}`, {
-                method: "DELETE",
-            });
+            const res = await deletePost(postId);
             if (res.ok) {
                 setPosts(prev => prev.filter(p => p._id !== postId));
             } else {
