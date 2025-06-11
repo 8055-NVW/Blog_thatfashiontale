@@ -3,3 +3,7 @@ export type CategoryType = {
     slug: string;
     description: string;
 }
+
+export type CategoryWithId = CategoryType & {
+    _id: string;
+}

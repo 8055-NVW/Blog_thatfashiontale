@@ -1,13 +1,8 @@
 "use client"
 
+import { CategoryWithId } from "@/types/CategoryType";
 import { getCategories } from "@/lib/api/categories"
 import { useEffect, useState } from "react"
-
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-}
 
 interface Props {
   selectedCategoryId: string;
@@ -16,7 +11,7 @@ interface Props {
 
 export default function CategoryDropDown({ selectedCategoryId, onSelect }: Props) {
 
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CategoryWithId[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null)
 
