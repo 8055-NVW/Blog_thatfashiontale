@@ -107,6 +107,12 @@ export default function CategoryDashboard() {
                     </li>
                 ))}
             </ul>
+            <button
+                onClick={() => router.push("/admin")}
+                className="bg-blue-600 text-white px-4 py-2 my-2 rounded"
+            >
+                Return to Dashboard
+            </button>
         </div>
     )
 }
