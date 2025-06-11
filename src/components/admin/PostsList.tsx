@@ -1,5 +1,106 @@
-export default function PostsList() {
-    return (
-        <h1>Posts List</h1>
-    )
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+type Props = {
+  categoryId?: string;
+};
+
+export default function PostsList({ categoryId }) {
+  const [posts, setPosts] = useState([]);
+  const router = useRouter();
+
+  const fetchPosts = async () => {
+    try {
+      const url = categoryId
+        ? `/api/posts?categoryId=${categoryId}`
+        : "/api/posts";
+      const res = await fetch(url);
+      const data = await res.json();
+      setPosts(data.posts || []);
+    } catch (err) {
+      console.error("Failed to fetch posts", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [categoryId]);
+
+   const getUserIdFromSession = async () => {
+    const res = await fetch("/api/me");
+    const json = await res.json();
+    console.log(json.id)
+    return json.id as string;
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!confirm("Delete this post?")) return;
+
+    try {
+      const userId = await getUserIdFromSession(); // Implement session-based retrieval or pass down via props.
+      const res = await fetch(`/api/posts/${postId}?userId=${userId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setPosts(prev => prev.filter(p => p._id !== postId));
+      } else {
+        alert("Failed to delete post.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting post");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <button
+        className="btn-primary mb-2"
+        onClick={() => router.push("/admin/posts")}
+      >
+        + Add Post
+      </button>
+      {posts.length === 0 ? (
+        <p>No posts found{categoryId ? " for this category" : ""}.</p>
+      ) : (
+        posts.map(post => (
+          <div
+            key={post._id}
+            className="flex items-start gap-4 border p-4 rounded-md"
+          >
+            {post.image && (
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-24 h-24 object-cover rounded"
+              />
+            )}
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold">{post.title}</h3>
+              <p className="text-sm text-gray-600 mb-1">
+                {post.slug} — {post.category.name}
+              </p>
+              <p className="text-gray-800">{post.content.slice(0, 100)}...</p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                className="btn-secondary"
+                onClick={() => router.push(`/admin/posts/${post._id}`)}
+              >
+                Edit
+              </button>
+              <button
+                className="btn-danger"
+                onClick={() => handleDelete(post._id)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  )
 }
