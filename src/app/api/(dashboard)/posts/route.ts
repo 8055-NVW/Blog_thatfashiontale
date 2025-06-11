@@ -7,57 +7,52 @@ import User from "@/models/User";
 
 //VIEW posts
 export const GET = async (request: Request) => {
-    try {
-        const { searchParams } = new URL(request.url);
-        // const categoryId = searchParams.get("categoryId");
-        const searchKeywords = searchParams.get("keywords") as string;
-        const filter: any = {};
+  try {
+    const { searchParams } = new URL(request.url);
+    const searchKeywords = searchParams.get("keywords") as string;
+    const categoryId = searchParams.get("categoryId");
+    const filter: any = {};
 
-        if (searchKeywords) {
-            filter.$or = [
-                {
-                    title: { $regex: searchKeywords, $options: "i" },
-                },
-                {
-                    content: { $regex: searchKeywords, $options: "i" },
-                }
-            ]
-        }
-
-        // if (categoryId && !Types.ObjectId.isValid(categoryId)) {
-        //     return new NextResponse(
-        //         JSON.stringify({ message: "Invalid categoryId format" }),
-        //         { status: 400 }
-        //     );
-        // }
-
-
-        await connect();
-
-        // if (categoryId) {
-        //     const category = await Category.findById(categoryId);
-
-        //     if (!category) {
-        //         return new NextResponse(
-        //             JSON.stringify({ message: "Category not found" }),
-        //             { status: 404 }
-        //         );
-        //     }
-
-        //     filter.category = new Types.ObjectId(categoryId);
-        // }
-
-        const posts = await Post.find(filter);
-
-        return new NextResponse(JSON.stringify({ posts }), { status: 200 });
-
-    } catch (error: any) {
-        return new NextResponse(
-            JSON.stringify({ message: "Failed to get posts", error: error.message }),
-            { status: 500 }
-        );
+    if (searchKeywords) {
+      filter.$or = [
+        { title: { $regex: searchKeywords, $options: "i" } },
+        { content: { $regex: searchKeywords, $options: "i" } },
+      ];
     }
-}
+
+    if (categoryId) {
+      if (!Types.ObjectId.isValid(categoryId)) {
+        return new NextResponse(
+          JSON.stringify({ message: "Invalid categoryId format" }),
+          { status: 400 }
+        );
+      }
+
+      const categoryExists = await Category.exists({ _id: categoryId });
+      if (!categoryExists) {
+        return new NextResponse(
+          JSON.stringify({ message: "Category not found" }),
+          { status: 404 }
+        );
+      }
+
+      filter.category = categoryId;
+    }
+
+    await connect();
+
+    const posts = await Post.find(filter)
+      .populate("category", "name slug")
+      .populate("user", "name email");
+
+    return new NextResponse(JSON.stringify({ posts }), { status: 200 });
+  } catch (error: any) {
+    return new NextResponse(
+      JSON.stringify({ message: "Failed to get posts", error: error.message }),
+      { status: 500 }
+    );
+  }
+};
 
 export const POST = async (request: Request) => {
     try {
