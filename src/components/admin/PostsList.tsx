@@ -24,6 +24,8 @@ export default function PostsList({ categoryId }: Props) {
             setPosts(data.posts || []);
         } catch (err) {
             console.error("Failed to fetch posts", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -51,15 +53,15 @@ export default function PostsList({ categoryId }: Props) {
             } else {
                 alert("Failed to delete post.");
             }
-        } catch (err) {
-            console.error(err);
-            alert("Error deleting post");
+        } catch (err: any) {
+            setError(err.message);
+            console.error("Failed to fetch posts:", err);
         }
     };
 
-    // if (loading) {
-    //     return <p>Loading posts...</p>;
-    // }
+    if (loading) {
+        return <p>Loading posts...</p>;
+    }
 
     if (error) {
         return <p>Error: {error}</p>;

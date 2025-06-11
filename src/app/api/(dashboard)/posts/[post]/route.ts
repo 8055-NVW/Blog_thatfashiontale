@@ -4,9 +4,10 @@ import Post from "@/models/Post";
 import { Types } from "mongoose";
 import Category from "@/models/Category";
 import User from "@/models/User";
+import { auth } from "@/auth";
 
 //GET SINGLE POST
-export const GET = async (request: Request, context: {params: any}) => {
+export const GET = async (request: Request, context: { params: any }) => {
     try {
         const params = await context.params;
         const postId = params.post;
@@ -50,7 +51,7 @@ export const GET = async (request: Request, context: {params: any}) => {
             )
         }
         return new NextResponse(JSON.stringify({ post }), { status: 200 })
-        
+
     } catch (error: any) {
         return new NextResponse(
             JSON.stringify({ message: "Failed to get post", error: error.message }),
@@ -60,7 +61,7 @@ export const GET = async (request: Request, context: {params: any}) => {
 }
 
 //UPDATE
-export const PATCH = async (request: Request, context: {params: any}) => {
+export const PATCH = async (request: Request, context: { params: any }) => {
     try {
         const params = await context.params;
         const postId = params.post;
@@ -83,14 +84,14 @@ export const PATCH = async (request: Request, context: {params: any}) => {
             );
         }
 
-        
+
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid or missing postId" }),
                 { status: 400 }
             )
         }
-        
+
         await connect()
 
         const user = await User.findById(userId)
@@ -102,10 +103,10 @@ export const PATCH = async (request: Request, context: {params: any}) => {
             )
         }
 
-        if(!user.is_superuser){
+        if (!user.is_superuser) {
             return new NextResponse(
-                JSON.stringify({ message: "Permission denied"}),
-                { status: 403}
+                JSON.stringify({ message: "Permission denied" }),
+                { status: 403 }
             )
         }
 
@@ -118,87 +119,70 @@ export const PATCH = async (request: Request, context: {params: any}) => {
             )
         }
 
-        
+
         const updatedPost = await Post.findByIdAndUpdate(
             postId,
-            {title, slug,content},
-            {new: true}
+            { title, slug, content },
+            { new: true }
         )
-        
+
 
         return new NextResponse(
             JSON.stringify({ message: "Post successfully updated", post: updatedPost }),
             { status: 200 }
         );
-        
+
     } catch (error: any) {
         return new NextResponse(
             JSON.stringify({ message: "Failed to update post", error: error.message }),
             { status: 500 }
-        );       
+        );
     }
- }
+}
 
 
 //DELETE
-export const DELETE = async (request: Request, context: {params: any}) => {
+export const DELETE = async (request: Request, context: { params: any }) => {
     try {
-        const params = await context.params;
-        const postId = params.post;
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId")
+        const session = await auth();
+        const postId = context.params.post;
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
+        if (!session?.user?.id || !session.user.is_superuser) {
             return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing userId" }),
-                { status: 400 }
-            )
+                JSON.stringify({ message: "Unauthorized" }),
+                { status: 403 }
+            );
         }
 
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid or missing postId" }),
                 { status: 400 }
-            )
+            );
         }
 
-        await connect()
-
-        const user = await User.findById(userId)
-
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
-            )
-        }
-
-        if(!user.is_superuser){
-            return new NextResponse(
-                JSON.stringify({ message: "Permission denied"}),
-                { status: 403}
-            )
-        }
+        await connect();
 
         const post = await Post.findById(postId);
+
         if (!post) {
             return new NextResponse(
                 JSON.stringify({ message: "Post not found" }),
                 { status: 404 }
             );
         }
-        
+
         await Post.findByIdAndDelete(postId);
 
         return new NextResponse(
-            JSON.stringify({ message: "Post deleted"}),
+            JSON.stringify({ message: "Post deleted" }),
             { status: 200 }
         );
-        
+
     } catch (error: any) {
         return new NextResponse(
             JSON.stringify({ message: "Failed to delete post", error: error.message }),
             { status: 500 }
-        );        
+        );
     }
 }
