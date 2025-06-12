@@ -62,7 +62,7 @@ export default function PostsList({ categoryId }: Props) {
         <div className="space-y-4">
             <button
                 className="btn-primary mb-2"
-                onClick={() => router.push("/admin/posts")}
+                onClick={() => router.push("/admin/posts/create")}
             >
                 + Add Post
             </button>
