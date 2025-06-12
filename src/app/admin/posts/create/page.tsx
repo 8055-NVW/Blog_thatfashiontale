@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCategories } from "@/lib/api/categories";
 import { CategoryWithId } from "@/types/CategoryType";
+import HotspotModal from "@/components/admin/HotspotModal";
 
 export default function CreatePostPage() {
     const { data: session, status } = useSession();
@@ -21,6 +22,7 @@ export default function CreatePostPage() {
     const [categories, setCategories] = useState<CategoryWithId[]>([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
     const [submitting, setSubmitting] = useState(false);
+    const [showHotspotModal, setShowHotspotModal] = useState(false);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -91,7 +93,7 @@ export default function CreatePostPage() {
                     <button
                         type="button"
                         className="border border-dashed border-gray-400 px-4 py-2 rounded text-sm"
-                        onClick={() => alert("Hotspot functionality coming soon!")}
+                        onClick={() => setShowHotspotModal(true)}
                     >
                         + Add Hotspot
                     </button>
@@ -155,6 +157,17 @@ export default function CreatePostPage() {
                     </button>
                 </div>
             </form>
+            {showHotspotModal && form.image && (
+                <HotspotModal
+                    imageUrl={form.image}
+                    initialHotspots={form.hotspots}
+                    onSave={(updatedHotspots) => {
+                        setForm({ ...form, hotspots: updatedHotspots });
+                        setShowHotspotModal(false);
+                    }}
+                    onClose={() => setShowHotspotModal(false)}
+                />
+            )}
         </div>
     );
 }
