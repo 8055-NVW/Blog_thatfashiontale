@@ -6,17 +6,21 @@ import { useEffect, useState } from "react";
 import { getCategories } from "@/lib/api/categories";
 import { CategoryWithId } from "@/types/CategoryType";
 import HotspotModal from "@/components/admin/HotspotModal";
+import { PostFormType } from "@/types/PostType";
+
 
 export default function CreatePostPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<PostFormType>({
         title: "",
         slug: "",
         content: "",
         image: "",
-        hotspots: []
+        category: "",
+        user: "",
+        hotspots: [],
     });
 
     const [categories, setCategories] = useState<CategoryWithId[]>([]);

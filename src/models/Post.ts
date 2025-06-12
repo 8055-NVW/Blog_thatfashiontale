@@ -1,20 +1,7 @@
 import { Schema, model, models } from "mongoose"
 import { PostType } from "@/types/PostType"
+import HotspotSchema from "./Hotspot"; 
 
-const HotspotSchema = new Schema(
-    {
-        x: { type: Number, required: true },
-        y: { type: Number, required: true },
-        items: [
-            {
-                title: { type: String },
-                link: { type: String, required: true },
-                image: { type: String }
-            },
-        ],
-    },
-    { _id: false }
-);
 
 const PostSchema = new Schema<PostType>(
     {

@@ -12,3 +12,13 @@ export type PostType = {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export type PostFormType = {
+  title: string;
+  slug: string;
+  content: string;
+  image?: string;
+  category: string;
+  user: string;
+  hotspots: HotspotType[];
+};

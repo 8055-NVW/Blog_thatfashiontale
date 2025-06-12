@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Hotspot, HotspotItem } from "./HotspotModal"
+import { HotspotType, HotspotItem } from "@/types/HotspotType"
 
 interface Props {
-    hotspot: Hotspot;
-    onChange: (updated: Hotspot) => void;
+    hotspot: HotspotType;
+    onChange: (updated: HotspotType) => void;
     onDelete: ()=> void;
 }
 
