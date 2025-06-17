@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { addOrUpdateCategory, deleteCategory, getCategories } from "@/lib/api/categories";
 
 type Category = {
     _id: string;
@@ -16,16 +17,18 @@ export default function CategoryDashboard() {
     const router = useRouter();
     const [categories, setCategories] = useState<Category[]>([]);
     const [form, setForm] = useState({ name: "", slug: "", description: "" });
-    const [editingId, setEditingId] = useState<string | null>(null);
-
-    const getCategories = async () => {
-        const res = await fetch('/api/categories');
-        const data = await res.json();
-        setCategories(data);
-    }
+    const [editingId, setEditingId] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        getCategories()
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories();
+                setCategories(data);
+            } catch (err: any) {
+                console.error("Failed to fetch categories:", err.message);
+            }
+        };
+        fetchCategories();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -34,40 +37,31 @@ export default function CategoryDashboard() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const method = editingId ? 'PATCH' : 'POST';
-        const payload = editingId
-            ? {
-                identifier: categories.find(c => c._id === editingId)?.slug,
-                newName: form.name,
-                newSlug: form.slug,
-                newDescription: form.description,
-            }
-            : form;
-
-        const res = await fetch('/api/categories', {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-
-        if (res.ok) {
-            await getCategories();
-            setForm({ name: '', slug: '', description: '' });
+        try {
+            await addOrUpdateCategory(form, editingId, categories);
+            const updated = await getCategories();
+            setCategories(updated);
+            setForm({
+                name: "",
+                slug: "",
+                description: ""
+            });
             setEditingId(null);
-        } else {
-            alert('Failed to save category');
+        } catch (error: any) {
+            alert("Failed to save category");
+            console.error(error)
         }
     }
 
     const handleDelete = async (categoryId: string) => {
-        const res = await fetch('/api/categories', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ categoryId }),
-        });
-
-        if (res.ok) getCategories();
-        else alert('Failed to delete category');
+        try {
+            await deleteCategory(categoryId);
+            const updated = await getCategories();
+            setCategories(updated);
+        } catch (err) {
+            alert("Failed to delete category");
+            console.error(err);
+        }
     };
 
     if (status === 'loading') return <p>Loading...</p>;

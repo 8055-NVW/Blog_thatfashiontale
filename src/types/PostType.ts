@@ -17,7 +17,8 @@ export type PostFormType = {
   title: string;
   slug: string;
   content: string;
-  image?: string;
+  // \\\\\remove question mark
+  image: string;
   category: string;
   user: string;
   hotspots: HotspotType[];

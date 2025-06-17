@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PostWithCategory } from "@/types/PostViewType";
-import { deletePost } from "@/lib/api/posts";
+import { deletePost, getPosts } from "@/lib/api/posts";
 
 type Props = {
     categoryId?: string;
@@ -17,16 +17,12 @@ export default function PostsList({ categoryId }: Props) {
 
     const fetchPosts = async () => {
         try {
-            const url = categoryId
-                ? `/api/posts?categoryId=${categoryId}`
-                : "/api/posts";
-            const res = await fetch(url);
-            const data = await res.json();
+            const data = await getPosts({ categoryId })
             setPosts(data.posts || []);
         } catch (err) {
             console.error("Failed to fetch posts", err);
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     };
 
@@ -46,7 +42,7 @@ export default function PostsList({ categoryId }: Props) {
             }
         } catch (err: any) {
             setError(err.message);
-            console.error("Failed to fetch posts:", err);
+            console.error("Delete error:", err);
         }
     };
 
