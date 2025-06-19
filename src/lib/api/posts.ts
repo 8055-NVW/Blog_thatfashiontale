@@ -15,8 +15,8 @@ export async function getPosts(params: GetPostParams = {}) {
     if (params.keywords) {
         req.set("keywords", params.keywords);
     }
-
-    const res = await fetch(`/api/posts?${req.toString()}`);
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/posts?${req.toString()}`);
     if (!res.ok) throw new Error("Failed to fetch posts");
     return res.json();
 }
