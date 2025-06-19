@@ -1,40 +1,29 @@
-"use client";
 
-import Hero from "@/components/Hero";
-import NavBar from "@/components/NavBar";
-import TopBar from "@/components/TopBar";
-import Footer from "@/components/Footer";
+import AboutMe from "@/components/homepage/AboutMe";
+import CategoryFilter from "@/components/homepage/CategoryFilter";
+import Featured from "@/components/homepage/Featured";
+import GetInTouch from "@/components/homepage/GetInTouch";
+import PostGrid from "@/components/homepage/PostGrid";
+import { getCategories } from "@/lib/api/categories";
+import { getPosts } from "@/lib/api/posts";
+import Hero from "src/components/homepage/Hero";
 
-// Get daily quote
-const getQuoteOfTheDay = () => {
-  const quotes = [
-    "Style is a way to say who you are without having to speak.",
-    "Life isn't perfect, but your outfit can be.",
-    "Travel far enough, you meet yourself.",
-    "Simplicity is the ultimate sophistication.",
-    "Fashion fades, style is eternal.",
-  ];
-  return quotes[Math.floor(Math.random() * quotes.length)];
-};
-
-export default function Home() {
+export default async function HomePage() {
+   const [postsData,categoryData] = await Promise.all([
+    getPosts(),
+    getCategories(),
+  ]);
+  console.log(postsData);
+  console.log(categoryData)
 
   return (
-    <div className="h-screen" style={{ backgroundColor: "#f8f5f2" }}>
-      <TopBar />
-      <NavBar />
-      <main className="container mx-auto p-4">
-        <Hero />
-        {/* Featured posts */}
-        {/* Contact section */}
-        <section className="mt-8 text-center">
-          <h2 className="text-xl mb-4">Welcome to That Fashion Tale</h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Discover curated fashion, lifestyle, and travel stories. Explore posts, shop the looks, and find your style inspiration.
-          </p>
-        </section>
-      </main>
-      <Footer />
+    <div className="space-y-20 px-4 md:px-8 py-10 max-w-7xl mx-auto" style={{ backgroundColor: "#f8f5f2" }}>
+        <Hero/>
+        {/* <Featured posts={postData}/>
+        <CategoryFilter categories={categoryData}/>
+        <PostGrid posts={postData}/> */}
+        <AboutMe/>
+        <GetInTouch/>
     </div>
   );
 }
