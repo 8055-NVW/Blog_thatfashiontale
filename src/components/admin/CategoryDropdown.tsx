@@ -39,7 +39,7 @@ export default function CategoryDropDown({ selectedCategoryId, onSelect }: Props
     }
 
     return (
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex flex-row items-center gap-4 mb-6">
       <select
         value={selectedCategoryId}
         onChange={(e) => onSelect(e.target.value)}

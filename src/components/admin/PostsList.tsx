@@ -57,7 +57,7 @@ export default function PostsList({ categoryId }: Props) {
     return (
         <div className="space-y-4">
             <button
-                className="btn-primary mb-2"
+                className="bg-blue-600 text-white px-4 py-2 rounded"
                 onClick={() => router.push("/admin/posts/create")}
             >
                 + Add Post
@@ -80,7 +80,7 @@ export default function PostsList({ categoryId }: Props) {
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold">{post.title}</h3>
                             <p className="text-sm text-gray-600 mb-1">
-                                {post.slug} — {post.category.name}
+                                {post.slug} — {post.category?.name}
                             </p>
                             <p className="text-gray-800">{post.content.slice(0, 100)}...</p>
                         </div>

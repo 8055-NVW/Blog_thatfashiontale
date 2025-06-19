@@ -1,48 +1,27 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
-import { Types } from "mongoose";
-import Category from "@/models/Category";
 import User from "@/models/User";
+import { Types } from "mongoose";
 import { auth } from "@/auth";
 
 //GET SINGLE POST
-export const GET = async (request: Request, context: { params: any }) => {
+export const GET = async (request: NextRequest, context: { params: { post: string } }) => {
     try {
-        const params = await context.params;
-        const postId = params.post;
-        const { searchParams } = new URL(request.url);
-        const categoryId = searchParams.get("categoryId");
-
-        if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
-            return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing categoryId" }),
-                { status: 400 }
-            )
-        }
+        const { post: postId } = await context.params;
 
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
                 JSON.stringify({ message: "Invalid or missing postId" }),
                 { status: 400 }
-            )
+            );
         }
 
         await connect();
 
-        const category = await Category.findById(categoryId)
-
-        if (!category) {
-            return new NextResponse(
-                JSON.stringify({ message: "Category not found" }),
-                { status: 404 }
-            )
-        }
-
-        const post = await Post.findOne({
-            _id: postId,
-            category: categoryId,
-        })
+        const post = await Post.findById(postId)
+            .populate("category", "name slug")
+            .populate("user", "name email")
 
         if (!post) {
             return new NextResponse(
@@ -60,92 +39,91 @@ export const GET = async (request: Request, context: { params: any }) => {
     }
 }
 
-//UPDATE
-export const PATCH = async (request: Request, context: { params: any }) => {
-    try {
-        const params = await context.params;
-        const postId = params.post;
-        const body = await request.json()
-        const { title, slug, content } = body;
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId")
+// UPDATE post
+export const PATCH = async (request: NextRequest, context: { params: {post: string} }) => {
+  try {
+    const { post: postId } = await context.params;
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
-            return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing userId" }),
-                { status: 400 }
-            )
-        }
-
-        if (!title || !slug || !content) {
-            return new NextResponse(
-                JSON.stringify({ message: "Missing required fields" }),
-                { status: 400 }
-            );
-        }
-
-
-        if (!postId || !Types.ObjectId.isValid(postId)) {
-            return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing postId" }),
-                { status: 400 }
-            )
-        }
-
-        await connect()
-
-        const user = await User.findById(userId)
-
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
-            )
-        }
-
-        if (!user.is_superuser) {
-            return new NextResponse(
-                JSON.stringify({ message: "Permission denied" }),
-                { status: 403 }
-            )
-        }
-
-        const post = await Post.findById(postId)
-
-        if (!post) {
-            return new NextResponse(
-                JSON.stringify({ message: "Post not found" }),
-                { status: 404 }
-            )
-        }
-
-
-        const updatedPost = await Post.findByIdAndUpdate(
-            postId,
-            { title, slug, content },
-            { new: true }
-        )
-
-
-        return new NextResponse(
-            JSON.stringify({ message: "Post successfully updated", post: updatedPost }),
-            { status: 200 }
-        );
-
-    } catch (error: any) {
-        return new NextResponse(
-            JSON.stringify({ message: "Failed to update post", error: error.message }),
-            { status: 500 }
-        );
+    if (!userId || !Types.ObjectId.isValid(userId)) {
+      return new NextResponse(
+        JSON.stringify({ message: "Invalid or missing userId" }),
+        { status: 400 }
+      );
     }
-}
 
+    if (!postId || !Types.ObjectId.isValid(postId)) {
+      return new NextResponse(
+        JSON.stringify({ message: "Invalid or missing postId" }),
+        { status: 400 }
+      );
+    }
+
+    const {title,slug,content,category,image,hotspots,}: {
+      title: string;
+      slug: string;
+      content: string;
+      category: string;
+      image?: string;
+      hotspots?: any[];
+    } = await request.json();
+
+    if (!title || !slug || !content) {
+      return new NextResponse(
+        JSON.stringify({ message: "Missing required fields" }),
+        { status: 400 }
+      );
+    }
+    console.log(category)
+    if (!category || !Types.ObjectId.isValid(category)) {
+      return new NextResponse(
+        JSON.stringify({ message: "Invalid or missing category" }),
+        { status: 400 }
+      );
+    }
+
+    await connect();
+
+    const user = await User.findById(userId);
+    if (!user || !user.is_superuser) {
+      return new NextResponse(
+        JSON.stringify({ message: "Permission denied or user not found" }),
+        { status: 403 }
+      );
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { title, slug, content, category, image, hotspots },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return new NextResponse(
+        JSON.stringify({ message: "Post not found" }),
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      message: "Post successfully updated",
+      post: updatedPost,
+    });
+
+  } catch (error: any) {
+    return new NextResponse(
+      JSON.stringify({ message: "Failed to update post", error: error.message }),
+      { status: 500 }
+    );
+  }
+};
 
 //DELETE
-export const DELETE = async (request: Request, context: { params: any }) => {
+export const DELETE = async (request: NextRequest, context: { params: {post: string} }) => {
     try {
         const session = await auth();
-        const postId = context.params.post;
+        const { post: postId } = await context.params;
 
         if (!session?.user?.id || !session.user.is_superuser) {
             return new NextResponse(

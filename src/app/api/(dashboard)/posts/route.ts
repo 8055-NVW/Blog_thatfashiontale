@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
 import { Types } from "mongoose";
@@ -6,7 +6,7 @@ import Category from "@/models/Category";
 import User from "@/models/User";
 
 //VIEW posts
-export const GET = async (request: Request) => {
+export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     const searchKeywords = searchParams.get("keywords") as string;

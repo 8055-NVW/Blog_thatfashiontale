@@ -12,13 +12,13 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-            <section>
+            <section className="flex ">
                 <CategoryDropDown
                     selectedCategoryId={selectedCategoryId}
                     onSelect={(id) => setSelectedCategoryId(id)} />
                 <button
                     onClick={() => router.push("/admin/categories")}
-                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                    className="bg-blue-600 text-white px-4 py-1 rounded"
                 >
                     Edit Categories
                 </button>
