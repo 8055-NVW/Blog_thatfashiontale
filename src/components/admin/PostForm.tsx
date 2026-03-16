@@ -1,6 +1,5 @@
 import { CategoryWithId } from "@/types/CategoryType";
 import { PostFormType } from "@/types/PostType"
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import HotspotModal from "./HotspotModal";
@@ -27,7 +26,6 @@ export default function PostForm({
         user: "",
         hotspots: [],
     });
-    const { data: session, status } = useSession();
     const router = useRouter();
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
     const [showHotspotModal, setShowHotspotModal] = useState(false);
@@ -35,7 +33,11 @@ export default function PostForm({
 
     useEffect(() => {
         setForm(initialForm)
-        setSelectedCategoryId(initialForm.category);
+        setSelectedCategoryId(
+            typeof initialForm.category === "string"
+                ? initialForm.category
+                : initialForm.category._id
+        );
     }, [initialForm]);
 
     const handleChange = (
@@ -52,9 +54,6 @@ export default function PostForm({
         }
         await onSubmit(form, selectedCategoryId);
     }
-
-    if (status === "loading") return <p>Loading...</p>;
-    if (!session?.user?.is_superuser) return <p>Unauthorized</p>;
 
     return (
         <div className="max-w-5xl mx-auto space-y-6 py-8">

@@ -1,13 +1,15 @@
 "use client"
 
-import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { addOrUpdateCategory, deleteCategory, getCategories } from "@/lib/api/categories";
 import { CategoryWithId } from "@/types/CategoryType";
 
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
 export default function CategoryDashboard() {
-    const { data: session, status } = useSession();
     const router = useRouter();
     const [categories, setCategories] = useState<CategoryWithId[]>([]);
     const [form, setForm] = useState({ name: "", slug: "", description: "" });
@@ -23,8 +25,8 @@ export default function CategoryDashboard() {
         try {
             const data = await getCategories();
             setCategories(data);
-        } catch (err: any) {
-            console.error("Failed to fetch categories:", err.message);
+        } catch (error: unknown) {
+            console.error("Failed to fetch categories:", getErrorMessage(error));
         } finally {
             setLoading(false);
         }
@@ -41,7 +43,7 @@ export default function CategoryDashboard() {
             await fetchCategories();
             setForm({ name: "", slug: "", description: "" });
             setEditingId(undefined);
-        } catch (error: any) {
+        } catch (error: unknown) {
             alert("Failed to save category");
             console.error(error)
         }
@@ -57,9 +59,6 @@ export default function CategoryDashboard() {
         }
     };
 
-    if (status === 'loading') return <p>Loading...</p>;
-    if (!session?.user?.is_superuser) return <p>Unauthorized</p>;
-
     return (
         <div className="max-w-2xl mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Manage Categories</h1>
@@ -74,7 +73,7 @@ export default function CategoryDashboard() {
                 <p>Loading...</p>
                 :
                 <ul>
-                    {categories.map((cat: any) => (
+                    {categories.map((cat) => (
                         <li key={cat._id} className="border-b py-2 flex justify-between items-center">
                             <div>
                                 <strong>{cat.name}</strong> <small className="text-gray-500">({cat.slug})</small>
