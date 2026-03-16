@@ -15,6 +15,18 @@ type GetPostsResponse = {
     posts: PostWithCategory[];
 }
 
+type GetPostOptions = {
+    baseUrl?: string;
+}
+
+export type PublicPost = PostWithCategory & {
+    slug: string;
+    image?: string;
+    content: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
 export async function getPosts(
     params: GetPostParams = {},
     options: GetPostsOptions = {}
@@ -38,11 +50,25 @@ export async function getPosts(
     return res.json() as Promise<GetPostsResponse>;
 }
 
-export async function getPost(postId: string): Promise<PostFormType>  {
-    const res = await fetch(`/api/posts/${postId}`);
+export async function getPost(postId: string, options: GetPostOptions = {}): Promise<PostFormType>  {
+    const res = await fetch(resolveApiUrl(`/api/posts/${postId}`, options.baseUrl));
     if (!res.ok) throw new Error("Failed to fetch post");
     const data = await res.json();
     return data.post;
+}
+
+export async function getPublicPostBySlug(
+    slug: string,
+    options: GetPostOptions = {}
+): Promise<PublicPost> {
+    const res = await fetch(resolveApiUrl(`/api/posts/${slug}`, options.baseUrl));
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch post");
+    }
+
+    const data = await res.json();
+    return data.post as PublicPost;
 }
 
 export async function updatePost(postId: string, form: PostFormType, userId: string) {

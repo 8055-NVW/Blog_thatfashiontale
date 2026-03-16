@@ -1,24 +1,34 @@
 import { NextRequest, NextResponse } from "next/server"
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
+import "@/models/Category";
+import "@/models/User";
 import { Types } from "mongoose";
 import { auth } from "@/auth";
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
 
 //GET SINGLE POST
 export const GET = async (request: NextRequest, context: { params: { post: string } }) => {
     try {
-        const { post: postId } = await context.params;
+        const { post: postIdentifier } = await context.params;
 
-        if (!postId || !Types.ObjectId.isValid(postId)) {
+        if (!postIdentifier) {
             return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing postId" }),
+                JSON.stringify({ message: "Missing post identifier" }),
                 { status: 400 }
             );
         }
 
         await connect();
 
-        const post = await Post.findById(postId)
+        const post = await Post.findOne(
+            Types.ObjectId.isValid(postIdentifier)
+                ? { $or: [{ _id: postIdentifier }, { slug: postIdentifier }] }
+                : { slug: postIdentifier }
+        )
             .populate("category", "name slug")
             .populate("user", "name email")
 
@@ -30,9 +40,9 @@ export const GET = async (request: NextRequest, context: { params: { post: strin
         }
         return new NextResponse(JSON.stringify({ post }), { status: 200 })
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to get post", error: error.message }),
+            JSON.stringify({ message: "Failed to get post", error: getErrorMessage(error) }),
             { status: 500 }
         );
     }
@@ -64,7 +74,7 @@ export const PATCH = async (request: NextRequest, context: { params: {post: stri
       content: string;
       category: string;
       image?: string;
-      hotspots?: any[];
+      hotspots?: unknown[];
     } = await request.json();
 
     if (!title || !slug || !content) {
@@ -101,9 +111,9 @@ export const PATCH = async (request: NextRequest, context: { params: {post: stri
       post: updatedPost,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return new NextResponse(
-      JSON.stringify({ message: "Failed to update post", error: error.message }),
+      JSON.stringify({ message: "Failed to update post", error: getErrorMessage(error) }),
       { status: 500 }
     );
   }
@@ -147,9 +157,9 @@ export const DELETE = async (request: NextRequest, context: { params: {post: str
             { status: 200 }
         );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to delete post", error: error.message }),
+            JSON.stringify({ message: "Failed to delete post", error: getErrorMessage(error) }),
             { status: 500 }
         );
     }
