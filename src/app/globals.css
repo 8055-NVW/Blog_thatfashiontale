@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "..";
 
 :root {
   --background: #ffffff;
@@ -30,5 +31,5 @@ body {
 .hero {
   background-image: url(https://placehold.co/600x400);
   min-height: 400px;
-  background-position: center center; 
+  background-position: center center;
 }

@@ -25,7 +25,7 @@ export default function Featured({ posts }: FeaturedProps) {
         <div className="p-4">
           <h3 className="text-xl font-bold mb-2">{post.title}</h3>
           <p className="text-gray-600 line-clamp-3">{post.content}</p>
-          <Link href={`/posts/${post._id}`} className="text-blue-600 mt-2 inline-block">
+          <Link href={`/posts/${post.slug}`} className="text-blue-600 mt-2 inline-block">
             Read more →
           </Link>
         </div>
