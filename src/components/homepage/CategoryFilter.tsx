@@ -11,9 +11,26 @@ export default function CategoryFilter({
   selectedCategoryId,
   onCategorySelect
 }: CategoryFilterProps) {
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <section className="px-4">
-      <h2 className="text-2xl font-semibold mb-4">Categories</h2>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-semibold">Browse by Category</h2>
+          <p className="mt-1 text-sm text-gray-600">Pick a topic to narrow the reading list, or keep everything in view.</p>
+        </div>
+        {selectedCategoryId !== null && (
+          <button
+            onClick={() => onCategorySelect(null)}
+            className="shrink-0 text-sm font-medium text-gray-700 underline underline-offset-4 transition hover:text-gray-950"
+          >
+            Clear filter
+          </button>
+        )}
+      </div>
       <div className="flex gap-4 overflow-x-auto pb-2">
         <button
           onClick={() => onCategorySelect(null)}
@@ -42,4 +59,3 @@ export default function CategoryFilter({
     </section>
   );
 }
-

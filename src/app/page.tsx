@@ -25,7 +25,9 @@ export default async function HomePage() {
   return (
     <div className="space-y-20 px-4 md:px-8 py-10 max-w-7xl mx-auto" style={{ backgroundColor: "#f8f5f2" }}>
         <Hero/>
-        <Featured posts={posts}/>
+        <section id="featured-post">
+          <Featured posts={posts}/>
+        </section>
         {/* <CategoryFilter categories={allCategories}/>
         <PostGrid posts={posts}/> */}
         <CategoryPostView posts={posts} categories={allCategories} />
