@@ -1,7 +1,6 @@
 'use client';
 
 import PostForm from "@/components/admin/PostForm";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCategories } from "@/lib/api/categories";
@@ -9,7 +8,6 @@ import { CategoryWithId } from "@/types/CategoryType";
 import { PostFormType } from "@/types/PostType";
 
 export default function CreatePostPage() {
-    const { data: session, status } = useSession();
     const router = useRouter();
     const [categories, setCategories] = useState<CategoryWithId[]>([]);
 
@@ -26,14 +24,7 @@ export default function CreatePostPage() {
     }, []);
 
     const handleCreatePost = async (form: PostFormType, categoryId: string) => {
-    if (!session?.user?.id) {
-      alert("Missing user ID.");
-      return;
-    }
-    const queryParams = new URLSearchParams({
-      userId: session.user.id,
-      categoryId,
-    });
+    const queryParams = new URLSearchParams({ categoryId });
     const res = await fetch(`/api/posts?${queryParams.toString()}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

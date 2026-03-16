@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/auth";
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
 import { Types } from "mongoose";
 import Category from "@/models/Category";
-import User from "@/models/User";
+import "@/models/User";
 
 //VIEW posts
 export const GET = async (request: NextRequest) => {
@@ -56,16 +57,16 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: Request) => {
     try {
+        const session = await auth();
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get("categoryId");
-        const userId = searchParams.get("userId")
         const body = await request.json()
         const { title, slug, content, image, hotspots } = body;
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
+        if (!session?.user?.id || !session.user.is_superuser) {
             return new NextResponse(
-                JSON.stringify({ message: " Invalid or missing userId" }),
-                { status: 400 }
+                JSON.stringify({ message: "Unauthorized" }),
+                { status: 403 }
             )
         }
 
@@ -85,22 +86,6 @@ export const POST = async (request: Request) => {
 
         await connect();
 
-        const user = await User.findById(userId)
-
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
-            )
-        }
-
-        if (!user.is_superuser) {
-            return new NextResponse(
-                JSON.stringify({ message: "Permission denied " }),
-                { status: 401 }
-            )
-        }
-
         const category = await Category.findById(categoryId)
 
         if (!category) {
@@ -117,7 +102,7 @@ export const POST = async (request: Request) => {
             category: new Types.ObjectId(categoryId),
             image,
             hotspots,
-            user: new Types.ObjectId(userId)
+            user: new Types.ObjectId(session.user.id)
         })
         await newPost.save();
 

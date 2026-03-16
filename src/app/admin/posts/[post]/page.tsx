@@ -2,17 +2,15 @@
 
 import PostForm from "@/components/admin/PostForm";
 import { getCategories } from "@/lib/api/categories";
-import { getPost, updatePost } from "@/lib/api/posts";
+import { getPost } from "@/lib/api/posts";
 import { CategoryWithId } from "@/types/CategoryType";
 import { PostFormType } from "@/types/PostType";
-import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 
 export default function EditPostPage() {
     const { post: postId } = useParams();
     const router = useRouter();
-    const { data: session, status } = useSession();
     const [form, setForm] = useState<PostFormType | undefined>(undefined);
     const [categories, setCategories] = useState<CategoryWithId[]>([]);
 
@@ -37,17 +35,8 @@ export default function EditPostPage() {
     }, [postId])
 
     const handleUpdatePost = async (updatedForm: PostFormType) => {
-        if (!session?.user?.id) {
-            alert("Missing user ID.");
-            return;
-        }
-
         try {
-            const queryParams = new URLSearchParams({
-                userId: session.user.id,
-            });
-
-            const res = await fetch(`/api/posts/${postId}?${queryParams}`, {
+            const res = await fetch(`/api/posts/${postId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedForm),
@@ -66,7 +55,7 @@ export default function EditPostPage() {
         }
     };
 
-    if (!form || status === "loading") return <p>Loading...</p>;
+    if (!form) return <p>Loading...</p>;
 
     return (
         <PostForm

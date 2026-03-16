@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { auth } from "@/auth";
 
 export const config = {
-    matcher: "/api/:path*",
+    matcher: ["/admin/:path*"],
 };
 
-export default function middleware(request: NextRequest) {   
-    return NextResponse.next()
-};
+export default auth((request) => {
+    if (!request.auth?.user) {
+        const signInUrl = new URL("/signin", request.nextUrl.origin);
+        signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+        return NextResponse.redirect(signInUrl);
+    }
 
-export { auth as middleware } from "@/auth"
+    return NextResponse.next();
+});

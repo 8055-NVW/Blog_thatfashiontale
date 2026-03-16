@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
-import User from "@/models/User";
 import { Types } from "mongoose";
 import { auth } from "@/auth";
 
@@ -42,14 +41,13 @@ export const GET = async (request: NextRequest, context: { params: { post: strin
 // UPDATE post
 export const PATCH = async (request: NextRequest, context: { params: {post: string} }) => {
   try {
+    const session = await auth();
     const { post: postId } = await context.params;
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
 
-    if (!userId || !Types.ObjectId.isValid(userId)) {
+    if (!session?.user?.id || !session.user.is_superuser) {
       return new NextResponse(
-        JSON.stringify({ message: "Invalid or missing userId" }),
-        { status: 400 }
+        JSON.stringify({ message: "Unauthorized" }),
+        { status: 403 }
       );
     }
 
@@ -84,14 +82,6 @@ export const PATCH = async (request: NextRequest, context: { params: {post: stri
     }
 
     await connect();
-
-    const user = await User.findById(userId);
-    if (!user || !user.is_superuser) {
-      return new NextResponse(
-        JSON.stringify({ message: "Permission denied or user not found" }),
-        { status: 403 }
-      );
-    }
 
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
