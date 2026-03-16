@@ -1,11 +1,24 @@
 import { PostFormType } from "@/types/PostType";
+import { PostWithCategory } from "@/types/PostViewType";
+import { resolveApiUrl } from "./url";
 
 type GetPostParams = {
     categoryId?: string;
     keywords?: string;
 }
 
-export async function getPosts(params: GetPostParams = {}) {
+type GetPostsOptions = {
+    baseUrl?: string;
+}
+
+type GetPostsResponse = {
+    posts: PostWithCategory[];
+}
+
+export async function getPosts(
+    params: GetPostParams = {},
+    options: GetPostsOptions = {}
+): Promise<GetPostsResponse> {
     const req = new URLSearchParams();
 
     if (params.categoryId) {
@@ -15,10 +28,14 @@ export async function getPosts(params: GetPostParams = {}) {
     if (params.keywords) {
         req.set("keywords", params.keywords);
     }
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/posts?${req.toString()}`);
+
+    const queryString = req.toString();
+    const path = queryString ? `/api/posts?${queryString}` : "/api/posts";
+    const res = await fetch(resolveApiUrl(path, options.baseUrl));
+
     if (!res.ok) throw new Error("Failed to fetch posts");
-    return res.json();
+
+    return res.json() as Promise<GetPostsResponse>;
 }
 
 export async function getPost(postId: string): Promise<PostFormType>  {

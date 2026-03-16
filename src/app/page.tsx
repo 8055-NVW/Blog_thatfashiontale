@@ -1,4 +1,5 @@
 
+import { headers } from "next/headers";
 import AboutMe from "@/components/homepage/AboutMe";
 import CategoryPostView from "@/components/homepage/CategoryPostView";
 import Featured from "@/components/homepage/Featured";
@@ -8,9 +9,15 @@ import { getPosts } from "@/lib/api/posts";
 import Hero from "src/components/homepage/Hero";
 
 export default async function HomePage() {
+   const requestHeaders = await headers();
+   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+   const protocol = requestHeaders.get("x-forwarded-proto")
+    ?? (host?.includes("localhost") || host?.startsWith("127.0.0.1") ? "http" : "https");
+   const baseUrl = host ? `${protocol}://${host}` : undefined;
+
    const [allPosts,allCategories] = await Promise.all([
-    getPosts(),
-    getCategories(),
+    getPosts({}, { baseUrl }),
+    getCategories({ baseUrl }),
   ]);
 
   const posts = allPosts.posts
@@ -27,4 +34,3 @@ export default async function HomePage() {
     </div>
   );
 }
-

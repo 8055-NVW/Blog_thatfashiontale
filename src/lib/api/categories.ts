@@ -1,11 +1,20 @@
-export async function getCategories() {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/categories`);
+import { CategoryWithId } from "@/types/CategoryType";
+import { resolveApiUrl } from "./url";
+
+type GetCategoriesOptions = {
+    baseUrl?: string;
+}
+
+export async function getCategories(
+    options: GetCategoriesOptions = {}
+): Promise<CategoryWithId[]> {
+    const res = await fetch(resolveApiUrl("/api/categories", options.baseUrl));
+
     if (!res.ok) {
         throw new Error("Failed to fetch categories")
     }
-    const data = await res.json();
-    return data;
+
+    return res.json() as Promise<CategoryWithId[]>;
 }
 
 export async function addOrUpdateCategory(
