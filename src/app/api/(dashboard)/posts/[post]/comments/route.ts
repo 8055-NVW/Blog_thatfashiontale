@@ -1,15 +1,25 @@
 import { NextResponse } from "next/server"
+import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
 import Comment from "@/models/Comment";
 import { Types } from "mongoose";
-import User from "@/models/User";
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
+type PostRouteContext = {
+    params: Promise<{
+        post: string;
+    }>;
+}
 
 //GET Comments
-export const GET = async (request: Request, context: { params: any }) => {
+export const GET = async (request: Request, context: PostRouteContext) => {
     try {
-        const postId = await context.params.post;
-        const filter: any = {};
+        const { post: postId } = await context.params;
+        const filter: { post?: Types.ObjectId } = {};
 
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
@@ -38,27 +48,26 @@ export const GET = async (request: Request, context: { params: any }) => {
             .sort({ createdAt: -1 });
 
         return new NextResponse(JSON.stringify({ comments }), { status: 200 })
-    } catch (error: any) {
-        return new NextResponse("Error in fetching comments" + error.message, {
+    } catch (error: unknown) {
+        return new NextResponse("Error in fetching comments" + getErrorMessage(error), {
             status: 500,
         })
     }
 }
 
 //POST Comment
-export const POST = async (request: Request, context: { params: any }) => {
+export const POST = async (request: Request, context: PostRouteContext) => {
     try {
         const params = await context.params;
         const postId = params.post;
         const body = await request.json()
         const { content } = body;
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId")
+        const userId = await requireSessionUserId();
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
+        if (!userId) {
             return new NextResponse(
-                JSON.stringify({ message: " Invalid or missing userId" }),
-                { status: 400 }
+                JSON.stringify({ message: "Unauthorized" }),
+                { status: 401 }
             )
         }
         
@@ -76,14 +85,6 @@ export const POST = async (request: Request, context: { params: any }) => {
             );
         }
         await connect()
-
-        const user = await User.findById(userId)
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
-            )
-        }
 
         const post = await Post.findById(postId)
 
@@ -107,9 +108,9 @@ export const POST = async (request: Request, context: { params: any }) => {
             { status: 201 }
         )
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to create post", eror: error.message }),
+            JSON.stringify({ message: "Failed to create comment", error: getErrorMessage(error) }),
             { status: 500 }
         )
     }

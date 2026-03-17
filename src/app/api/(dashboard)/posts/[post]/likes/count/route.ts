@@ -1,32 +1,37 @@
+import { NextResponse } from "next/server";
+import { Types } from "mongoose";
 import connect from "@/lib/mongoose";
 import Like from "@/models/Like";
-import { Types } from "mongoose";
-import { NextResponse } from "next/server";
 
-// GET - Get like count for post
-export const GET = async (request: Request, context: { params: any }) => {
-    try {
-        const postId = context.params.post
-        if (!postId || !Types.ObjectId.isValid(postId)) {
-            return new NextResponse(
-                JSON.stringify({ message: "Invalid postId" }),
-                { status: 400 }
-            );
-        }
+export const GET = async (
+  request: Request,
+  context: { params: Promise<{ post: string }> }
+) => {
+  try {
+    const { post: postId } = await context.params;
 
-        await connect();
-
-        const count = await Like.countDocuments({ post: postId })
-
-        return new NextResponse(
-            JSON.stringify({ count }),
-            { status: 200 }
-        )
-
-    } catch (error: any) {
-        return new NextResponse(
-            JSON.stringify({ message: "Error in fetching like count", error: error.message }),
-            { status: 500 }
-        )
+    if (!postId || !Types.ObjectId.isValid(postId)) {
+      return new NextResponse(
+        JSON.stringify({ message: "Invalid postId" }),
+        { status: 400 }
+      );
     }
-}
+
+    await connect();
+
+    const count = await Like.countDocuments({
+      post: postId,
+      comment: null,
+    });
+
+    return NextResponse.json({ count });
+  } catch (error) {
+    return new NextResponse(
+      JSON.stringify({
+        message: "Failed to get like count",
+        error: error instanceof Error ? error.message : "Unknown error",
+      }),
+      { status: 500 }
+    );
+  }
+};

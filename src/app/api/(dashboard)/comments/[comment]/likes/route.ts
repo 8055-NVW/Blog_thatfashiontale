@@ -4,10 +4,21 @@ import Comment from "@/models/Comment";
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
+type CommentRouteContext = {
+    params: Promise<{
+        comment: string;
+    }>;
+};
+
+async function getCommentIdFromContext(context: CommentRouteContext) {
+    const { comment } = await context.params;
+    return comment;
+}
+
 // GET: Check like status
-export const GET = async (request: Request, context: { params: any }) => {
+export const GET = async (request: Request, context: CommentRouteContext) => {
     try {
-        const commentId = context.params.comment;
+        const commentId = await getCommentIdFromContext(context);
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
 
@@ -55,9 +66,9 @@ export const GET = async (request: Request, context: { params: any }) => {
 
 
 // POST: Like 
-export const POST = async (request: Request, context: { params: any }) => {
+export const POST = async (request: Request, context: CommentRouteContext) => {
     try {
-        const commentId = context.params.comment;
+        const commentId = await getCommentIdFromContext(context);
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
 
@@ -117,9 +128,9 @@ export const POST = async (request: Request, context: { params: any }) => {
 };
 
 // DELETE: Unlike
-export const DELETE = async (request: Request, context: { params: any }) => {
+export const DELETE = async (request: Request, context: CommentRouteContext) => {
     try {
-        const commentId = context.params.comment;
+        const commentId = await getCommentIdFromContext(context);
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId");
 

@@ -1,4 +1,4 @@
-import { Schema, model, models, Types } from "mongoose"
+import { Schema, model, models } from "mongoose"
 import { LikeType } from "@/types/LikeType";
 
 const LikeSchema = new Schema<LikeType>(
@@ -13,8 +13,33 @@ const LikeSchema = new Schema<LikeType>(
 
 )
 
-LikeSchema.index({ user: 1, post: 1 }, { unique: true, sparse: true });
-LikeSchema.index({ user: 1, comment: 1 }, { unique: true, sparse: true });
+LikeSchema.index(
+  { user: 1, post: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      post: { $type: "objectId" },
+      $or: [
+        { comment: null },
+        { comment: { $exists: false } },
+      ],
+    },
+  }
+);
+
+LikeSchema.index(
+  { user: 1, comment: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      comment: { $type: "objectId" },
+      $or: [
+        { post: null },
+        { post: { $exists: false } },
+      ],
+    },
+  }
+);
 
 LikeSchema.pre('validate', function (next) {
   if ((this.post && this.comment) || (!this.post && !this.comment)) {

@@ -1,22 +1,53 @@
 import connect from "@/lib/mongoose";
+import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
 import Like from "@/models/Like";
 import Post from "@/models/Post";
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown error";
+}
+
+function isDuplicateKeyError(error: unknown) {
+  return typeof error === "object" && error !== null && "code" in error && error.code === 11000;
+}
+
+type PostRouteContext = {
+  params: Promise<{
+    post: string;
+  }>;
+};
+
+async function getPostIdFromContext(context: PostRouteContext) {
+  const { post } = await context.params;
+  return post;
+}
+
+function buildPostLikeLookup(userId: string, postId: string) {
+  return {
+    user: new Types.ObjectId(userId),
+    post: new Types.ObjectId(postId),
+    $or: [
+      { comment: null },
+      { comment: { $exists: false } },
+    ],
+  };
+}
+
+function buildPostLikeDocument(userId: string, postId: string) {
+  return {
+    user: new Types.ObjectId(userId),
+    post: new Types.ObjectId(postId),
+    comment: null,
+  };
+}
+
 // GET: Check like status
-export const GET = async (request: Request, context: { params: any }) => {
+export const GET = async (request: Request, context: PostRouteContext) => {
     try {
-      const postId = await context.params.post;
-      const { searchParams } = new URL(request.url);
-      const userId = searchParams.get("userId");
-  
-      if (!userId || !Types.ObjectId.isValid(userId)) {
-        return new NextResponse(
-          JSON.stringify({ message: "Invalid or missing userId" }),
-          { status: 400 }
-        );
-      }
+      const postId = await getPostIdFromContext(context);
+      const userId = await requireSessionUserId();
   
       if (!postId || !Types.ObjectId.isValid(postId)) {
         return new NextResponse(
@@ -34,36 +65,41 @@ export const GET = async (request: Request, context: { params: any }) => {
           { status: 404 }
         );
       }
+
+      if (!userId) {
+        return new NextResponse(
+          JSON.stringify({ hasLiked: false }),
+          { status: 200 }
+        );
+      }
+
+      const likeFilter = buildPostLikeLookup(userId, postId);
   
-      const like = await Like.findOne({
-        user: userId,
-        post: postId
-      });
+      const like = await Like.findOne(likeFilter);
   
       return new NextResponse(
         JSON.stringify({ hasLiked: !!like }),
         { status: 200 }
       );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       return new NextResponse(
-        JSON.stringify({ message: "Error checking like status", error: error.message }),
+        JSON.stringify({ message: "Error checking like status", error: getErrorMessage(error) }),
         { status: 500 }
       );
     }
   };
 
 // POST: Like 
-export const POST = async (request: Request, context: { params: any }) => {
+export const POST = async (request: Request, context: PostRouteContext) => {
     try {
-      const postId = context.params.post;
-      const { searchParams } = new URL(request.url);
-      const userId = searchParams.get("userId");
-  
-      if (!userId || !Types.ObjectId.isValid(userId)) {
+      const postId = await getPostIdFromContext(context);
+      const userId = await requireSessionUserId();
+
+      if (!userId) {
         return new NextResponse(
-          JSON.stringify({ message: "Invalid or missing userId" }),
-          { status: 400 }
+          JSON.stringify({ message: "Unauthorized" }),
+          { status: 401 }
         );
       }
   
@@ -83,11 +119,10 @@ export const POST = async (request: Request, context: { params: any }) => {
           { status: 404 }
         );
       }
+
+      const likeFilter = buildPostLikeLookup(userId, postId);
   
-      const existingLike = await Like.findOne({
-        user: userId,
-        post: postId
-      });
+      const existingLike = await Like.findOne(likeFilter);
   
       if (existingLike) {
         return new NextResponse(
@@ -96,10 +131,7 @@ export const POST = async (request: Request, context: { params: any }) => {
         );
       }
   
-      const newLike = new Like({
-        user: userId,
-        post: postId
-      });
+      const newLike = new Like(buildPostLikeDocument(userId, postId));
   
       await newLike.save();
   
@@ -107,25 +139,31 @@ export const POST = async (request: Request, context: { params: any }) => {
         JSON.stringify({ message: "Post liked successfully" }),
         { status: 201 }
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (isDuplicateKeyError(error)) {
+        return new NextResponse(
+          JSON.stringify({ message: "Post already liked" }),
+          { status: 409 }
+        );
+      }
+
       return new NextResponse(
-        JSON.stringify({ message: "Failed to like post", error: error.message }),
+        JSON.stringify({ message: "Failed to like post", error: getErrorMessage(error) }),
         { status: 500 }
       );
     }
   };
 
 // DELETE: Unlike
-export const DELETE = async (request: Request, context: { params: any }) => {
+export const DELETE = async (request: Request, context: PostRouteContext) => {
     try {
-      const postId = await context.params.post;
-      const { searchParams } = new URL(request.url);
-      const userId = searchParams.get("userId");
-  
-      if (!userId || !Types.ObjectId.isValid(userId)) {
+      const postId = await getPostIdFromContext(context);
+      const userId = await requireSessionUserId();
+
+      if (!userId) {
         return new NextResponse(
-          JSON.stringify({ message: "Invalid or missing userId" }),
-          { status: 400 }
+          JSON.stringify({ message: "Unauthorized" }),
+          { status: 401 }
         );
       }
   
@@ -137,11 +175,10 @@ export const DELETE = async (request: Request, context: { params: any }) => {
       }
   
       await connect();
+
+      const likeFilter = buildPostLikeLookup(userId, postId);
   
-      const result = await Like.findOneAndDelete({
-        user: userId,
-        post: postId
-      });
+      const result = await Like.findOneAndDelete(likeFilter);
   
       if (!result) {
         return new NextResponse(
@@ -154,9 +191,9 @@ export const DELETE = async (request: Request, context: { params: any }) => {
         JSON.stringify({ message: "Post unliked successfully" }),
         { status: 200 }
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       return new NextResponse(
-        JSON.stringify({ message: "Failed to unlike post", error: error.message }),
+        JSON.stringify({ message: "Failed to unlike post", error: getErrorMessage(error) }),
         { status: 500 }
       );
     }
