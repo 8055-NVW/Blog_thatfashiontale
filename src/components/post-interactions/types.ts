@@ -4,6 +4,7 @@ export type DiscussionReply = {
   createdAt?: Date | string;
   likeCount?: number;
   hasLiked?: boolean;
+  isOwner?: boolean;
   user?: {
     _id?: string;
     name?: string;

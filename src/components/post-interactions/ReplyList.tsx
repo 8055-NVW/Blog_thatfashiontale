@@ -1,4 +1,5 @@
 import CommentLikeButton from "./CommentLikeButton";
+import DeleteOwnButton from "./DeleteOwnButton";
 import { DiscussionReply } from "./types";
 
 function formatInteractionDate(date?: Date | string) {
@@ -50,6 +51,7 @@ export default function ReplyList({ replies, isSignedIn, signInHref }: ReplyList
                 likeCount={reply.likeCount ?? 0}
                 signInHref={signInHref}
               />
+              {reply.isOwner ? <DeleteOwnButton commentId={reply._id} itemLabel="reply" /> : null}
             </div>
           </article>
         );

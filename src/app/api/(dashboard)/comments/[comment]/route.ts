@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
 import connect from "@/lib/mongoose";
 import Comment from "@/models/Comment";
+import Like from "@/models/Like";
 import { Types } from "mongoose";
 
 function getErrorMessage(error: unknown) {
@@ -51,7 +52,14 @@ export const DELETE = async (request: Request, context: CommentRouteContext) => 
             );
         }
 
-        await Comment.findByIdAndDelete(commentId);
+        const commentObjectId = new Types.ObjectId(commentId);
+        const replyIds = await Comment.find({ parent: commentObjectId }).distinct("_id");
+        const idsToDelete = [commentObjectId, ...replyIds];
+
+        await Promise.all([
+            Comment.deleteMany({ _id: { $in: idsToDelete } }),
+            Like.deleteMany({ comment: { $in: idsToDelete } }),
+        ]);
 
         return new NextResponse(
             JSON.stringify({ message: "Comment deleted"}),

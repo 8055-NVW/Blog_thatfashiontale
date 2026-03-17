@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import CommentLikeButton from "./CommentLikeButton";
+import DeleteOwnButton from "./DeleteOwnButton";
 import ReplyComposer from "./ReplyComposer";
 import ReplyList from "./ReplyList";
 import { DiscussionComment } from "./types";
@@ -76,6 +77,7 @@ export default function CommentItem({
             Sign in to reply
           </Link>
         )}
+        {comment.isOwner ? <DeleteOwnButton commentId={comment._id} itemLabel="comment" /> : null}
         {replyCount > 0 ? <span>{replyCount} {replyCount === 1 ? "reply" : "replies"}</span> : null}
       </div>
 

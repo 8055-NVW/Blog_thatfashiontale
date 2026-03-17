@@ -1,6 +1,7 @@
 import { getPublicPostBySlug } from "@/lib/api/posts";
 import { auth } from "@/auth";
 import { applyDiscussionLikeState } from "@/components/post-interactions/discussionLikeState";
+import { applyDiscussionOwnershipState } from "@/components/post-interactions/discussionOwnershipState";
 import PostSaveButton from "@/components/post-interactions/PostSaveButton";
 import PostDiscussion from "@/components/post-interactions/PostDiscussion";
 import { buildPostLikeCountLookup, buildPostLikeLookup } from "@/lib/likes/postLike";
@@ -156,6 +157,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                 replies: await getCommentReplies(comment._id, baseUrl),
             }))
         );
+        comments = applyDiscussionOwnershipState(comments, session?.user?.id);
 
         const commentIds = comments.flatMap((comment) => [
             comment._id,
