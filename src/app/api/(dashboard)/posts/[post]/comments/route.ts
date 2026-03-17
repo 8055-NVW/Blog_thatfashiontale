@@ -46,7 +46,7 @@ export const GET = async (request: Request, context: PostRouteContext) => {
 
         const comments = await Comment.find(filter)
             .populate('user', 'name image')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: 1 });
 
         return new NextResponse(JSON.stringify({ comments }), { status: 200 })
     } catch (error: unknown) {
