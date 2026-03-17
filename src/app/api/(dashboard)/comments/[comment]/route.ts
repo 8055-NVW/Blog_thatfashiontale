@@ -1,20 +1,29 @@
 import { NextResponse } from "next/server"
+import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
 import connect from "@/lib/mongoose";
 import Comment from "@/models/Comment";
 import { Types } from "mongoose";
-import User from "@/models/User";
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
+type CommentRouteContext = {
+    params: Promise<{
+        comment: string;
+    }>;
+};
 
 //DELETE Comment
-export const DELETE = async (request: Request, context: { params: any }) => {
+export const DELETE = async (request: Request, context: CommentRouteContext) => {
     try {
-        const commentId = await context.params.comment;
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId")
+        const { comment: commentId } = await context.params;
+        const userId = await requireSessionUserId();
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
+        if (!userId) {
             return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing userId" }),
-                { status: 400 }
+                JSON.stringify({ message: "Unauthorized" }),
+                { status: 401 }
             )
         }
 
@@ -26,15 +35,6 @@ export const DELETE = async (request: Request, context: { params: any }) => {
         }
 
         await connect()
-
-        const user = await User.findById(userId)
-
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
-            )
-        }
 
         const comment = await Comment.findById(commentId);
         if (!comment) {
@@ -58,9 +58,9 @@ export const DELETE = async (request: Request, context: { params: any }) => {
             { status: 200 }
         );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to delete post", error: error.message }),
+            JSON.stringify({ message: "Failed to delete post", error: getErrorMessage(error) }),
             { status: 500 }
         )
     }
