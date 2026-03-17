@@ -1,4 +1,4 @@
-export type DiscussionComment = {
+export type DiscussionReply = {
   _id: string;
   content: string;
   createdAt?: Date | string;
@@ -6,4 +6,8 @@ export type DiscussionComment = {
     _id?: string;
     name?: string;
   };
+};
+
+export type DiscussionComment = DiscussionReply & {
+  replies?: DiscussionReply[];
 };

@@ -6,13 +6,12 @@ import { DiscussionComment } from "./types";
 
 type PostDiscussionProps = {
   comments: DiscussionComment[];
-  formatDate: (date?: Date | string) => string | null;
   postId: string;
   isSignedIn: boolean;
   signInHref?: string;
 };
 
-export default function PostDiscussion({ comments, formatDate, postId, isSignedIn, signInHref = "/signin" }: PostDiscussionProps) {
+export default function PostDiscussion({ comments, postId, isSignedIn, signInHref = "/signin" }: PostDiscussionProps) {
   return (
     <section className="space-y-6 rounded-2xl border border-black/10 bg-white/80 p-6 shadow-sm">
       <DiscussionHeader count={comments.length} />
@@ -23,7 +22,7 @@ export default function PostDiscussion({ comments, formatDate, postId, isSignedI
           No comments yet.
         </div>
       ) : (
-        <CommentList comments={comments} formatDate={formatDate} />
+        <CommentList comments={comments} isSignedIn={isSignedIn} signInHref={signInHref} />
       )}
     </section>
   );

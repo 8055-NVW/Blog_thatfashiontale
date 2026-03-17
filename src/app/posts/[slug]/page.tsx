@@ -43,6 +43,19 @@ async function getPostComments(postId: string, baseUrl?: string): Promise<Discus
     return data.comments ?? [];
 }
 
+async function getCommentReplies(commentId: string, baseUrl?: string) {
+    const response = await fetch(`${baseUrl ?? ""}/api/comments/${commentId}/replies`, {
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch replies");
+    }
+
+    const data = await response.json() as { replies?: DiscussionComment[] };
+    return data.replies ?? [];
+}
+
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
     const { slug } = await params;
     const requestHeaders = await headers();
@@ -58,6 +71,12 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
     try {
         post = await getPublicPostBySlug(slug, { baseUrl });
         comments = await getPostComments(post._id, baseUrl);
+        comments = await Promise.all(
+            comments.map(async (comment) => ({
+                ...comment,
+                replies: await getCommentReplies(comment._id, baseUrl),
+            }))
+        );
     } catch {
         notFound();
     }
@@ -102,7 +121,6 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
 
             <PostDiscussion
                 comments={comments}
-                formatDate={formatDate}
                 postId={post._id}
                 isSignedIn={Boolean(session?.user?.id)}
                 signInHref={`/signin?callbackUrl=/posts/${slug}`}

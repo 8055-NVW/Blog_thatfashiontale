@@ -20,7 +20,7 @@ type PostRouteContext = {
 export const GET = async (request: Request, context: PostRouteContext) => {
     try {
         const { post: postId } = await context.params;
-        const filter: { post?: Types.ObjectId } = {};
+        const filter: { post?: Types.ObjectId; $or?: Array<{ parent: null } | { parent: { $exists: false } }> } = {};
 
         if (!postId || !Types.ObjectId.isValid(postId)) {
             return new NextResponse(
@@ -42,6 +42,10 @@ export const GET = async (request: Request, context: PostRouteContext) => {
             }
 
             filter.post = new Types.ObjectId(postId)
+            filter.$or = [
+                { parent: null },
+                { parent: { $exists: false } },
+            ];
         }
 
         const comments = await Comment.find(filter)
