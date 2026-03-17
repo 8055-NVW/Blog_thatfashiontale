@@ -1,13 +1,24 @@
 import { NextResponse } from "next/server"
+import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
 import connect from "@/lib/mongoose";
 import Comment from "@/models/Comment";
-import User from "@/models/User";
+import "@/models/User";
 import { Types } from "mongoose";
 
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
+type CommentRouteContext = {
+    params: Promise<{
+        comment: string;
+    }>;
+};
+
 //GET replies
-export const GET = async (request: Request, context: { params: any }) => {
+export const GET = async (request: Request, context: CommentRouteContext) => {
     try {
-        const commentId = await context.params.comment;
+        const { comment: commentId } = await context.params;
 
         if (!commentId || !Types.ObjectId.isValid(commentId)) {
             return new NextResponse(
@@ -36,27 +47,26 @@ export const GET = async (request: Request, context: { params: any }) => {
             { status: 200 }
         );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to fetch replies", error: error.message }),
+            JSON.stringify({ message: "Failed to fetch replies", error: getErrorMessage(error) }),
             { status: 500 }
         )
     }
 }
 
 // POST Reply
-export const POST = async (request: Request, context: { params: any }) => {
+export const POST = async (request: Request, context: CommentRouteContext) => {
     try {
-        const commentId = await context.params.comment;
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId");
+        const { comment: commentId } = await context.params;
+        const userId = await requireSessionUserId();
         const body = await request.json();
         const { content } = body;
 
-        if (!userId || !Types.ObjectId.isValid(userId)) {
+        if (!userId) {
             return new NextResponse(
-                JSON.stringify({ message: "Invalid or missing userId" }),
-                { status: 400 }
+                JSON.stringify({ message: "Unauthorized" }),
+                { status: 401 }
             )
         }
 
@@ -76,14 +86,6 @@ export const POST = async (request: Request, context: { params: any }) => {
 
         await connect();
 
-        const user = await User.findById(userId)
-        if (!user) {
-            return new NextResponse(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
-            )
-        }
-
         const parentComment = await Comment.findById(commentId)
 
         if (!parentComment) {
@@ -93,10 +95,17 @@ export const POST = async (request: Request, context: { params: any }) => {
             )
         }
 
+        if (parentComment.parent) {
+            return new NextResponse(
+                JSON.stringify({ message: "Replies can only be created for top-level comments" }),
+                { status: 400 }
+            )
+        }
+
         const newReply = new Comment({
             post: parentComment.post,
-            user: userId,
-            parent: commentId,
+            user: new Types.ObjectId(userId),
+            parent: new Types.ObjectId(commentId),
             content: content.trim()
         });
 
@@ -112,9 +121,9 @@ export const POST = async (request: Request, context: { params: any }) => {
             { status: 201 }
         )
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to create reply", error: error.message }),
+            JSON.stringify({ message: "Failed to create reply", error: getErrorMessage(error) }),
             { status: 500 }
         )
     }

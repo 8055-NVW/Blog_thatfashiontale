@@ -3,6 +3,7 @@ import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
 import connect from "@/lib/mongoose";
 import Post from "@/models/Post";
 import Comment from "@/models/Comment";
+import "@/models/User";
 import { Types } from "mongoose";
 
 function getErrorMessage(error: unknown) {
