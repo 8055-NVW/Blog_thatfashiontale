@@ -1,3 +1,4 @@
+import CommentLikeButton from "./CommentLikeButton";
 import { DiscussionReply } from "./types";
 
 function formatInteractionDate(date?: Date | string) {
@@ -20,9 +21,11 @@ function formatInteractionDate(date?: Date | string) {
 
 type ReplyListProps = {
   replies: DiscussionReply[];
+  isSignedIn: boolean;
+  signInHref: string;
 };
 
-export default function ReplyList({ replies }: ReplyListProps) {
+export default function ReplyList({ replies, isSignedIn, signInHref }: ReplyListProps) {
   if (replies.length === 0) {
     return null;
   }
@@ -39,6 +42,15 @@ export default function ReplyList({ replies }: ReplyListProps) {
               {replyDate ? <p className="text-sm text-gray-500">{replyDate}</p> : null}
             </div>
             <p className="text-sm leading-7 text-gray-800 md:text-base">{reply.content}</p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+              <CommentLikeButton
+                commentId={reply._id}
+                hasLiked={reply.hasLiked ?? false}
+                isSignedIn={isSignedIn}
+                likeCount={reply.likeCount ?? 0}
+                signInHref={signInHref}
+              />
+            </div>
           </article>
         );
       })}

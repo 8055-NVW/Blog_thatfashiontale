@@ -19,10 +19,7 @@ LikeSchema.index(
     unique: true,
     partialFilterExpression: {
       post: { $type: "objectId" },
-      $or: [
-        { comment: null },
-        { comment: { $exists: false } },
-      ],
+      comment: null,
     },
   }
 );
@@ -33,10 +30,7 @@ LikeSchema.index(
     unique: true,
     partialFilterExpression: {
       comment: { $type: "objectId" },
-      $or: [
-        { post: null },
-        { post: { $exists: false } },
-      ],
+      post: null,
     },
   }
 );

@@ -1,10 +1,14 @@
 import { getPublicPostBySlug } from "@/lib/api/posts";
 import { auth } from "@/auth";
+import { applyDiscussionLikeState } from "@/components/post-interactions/discussionLikeState";
 import PostDiscussion from "@/components/post-interactions/PostDiscussion";
+import connect from "@/lib/mongoose";
+import Like from "@/models/Like";
 import Image from "next/image";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { DiscussionComment } from "@/components/post-interactions/types";
+import { Types } from "mongoose";
 
 type PostDetailPageProps = {
     params: Promise<{
@@ -56,6 +60,61 @@ async function getCommentReplies(commentId: string, baseUrl?: string) {
     return data.replies ?? [];
 }
 
+async function getDiscussionLikeState(commentIds: string[], userId?: string) {
+    if (commentIds.length === 0) {
+        return {
+            countById: new Map<string, number>(),
+            likedIds: new Set<string>(),
+        };
+    }
+
+    await connect();
+
+    const objectIds = commentIds.map((commentId) => new Types.ObjectId(commentId));
+    const commentScope = {
+        comment: { $in: objectIds },
+        $or: [
+            { post: null },
+            { post: { $exists: false } },
+        ],
+    };
+
+    const likeCounts = await Like.aggregate<{ _id: Types.ObjectId; count: number }>([
+        {
+            $match: commentScope,
+        },
+        {
+            $group: {
+                _id: "$comment",
+                count: { $sum: 1 },
+            },
+        },
+    ]);
+
+    const countById = new Map<string, number>(
+        likeCounts.map((entry) => [entry._id.toString(), entry.count])
+    );
+
+    const likedIds = new Set<string>();
+
+    if (userId) {
+        const likedComments = await Like.find({
+            user: new Types.ObjectId(userId),
+            ...commentScope,
+        })
+            .select("comment")
+            .lean<{ comment?: Types.ObjectId }[]>();
+
+        likedComments.forEach((entry) => {
+            if (entry.comment) {
+                likedIds.add(entry.comment.toString());
+            }
+        });
+    }
+
+    return { countById, likedIds };
+}
+
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
     const { slug } = await params;
     const requestHeaders = await headers();
@@ -77,6 +136,14 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                 replies: await getCommentReplies(comment._id, baseUrl),
             }))
         );
+
+        const commentIds = comments.flatMap((comment) => [
+            comment._id,
+            ...(comment.replies ?? []).map((reply) => reply._id),
+        ]);
+        const likeState = await getDiscussionLikeState(commentIds, session?.user?.id);
+
+        comments = applyDiscussionLikeState(comments, likeState);
     } catch {
         notFound();
     }

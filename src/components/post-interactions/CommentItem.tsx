@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import CommentLikeButton from "./CommentLikeButton";
 import ReplyComposer from "./ReplyComposer";
 import ReplyList from "./ReplyList";
 import { DiscussionComment } from "./types";
@@ -51,7 +52,14 @@ export default function CommentItem({
       </div>
       <p className="mt-4 text-base leading-7 text-gray-800">{comment.content}</p>
 
-      <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+        <CommentLikeButton
+          commentId={comment._id}
+          hasLiked={comment.hasLiked ?? false}
+          isSignedIn={isSignedIn}
+          likeCount={comment.likeCount ?? 0}
+          signInHref={signInHref}
+        />
         {isSignedIn ? (
           <button
             type="button"
@@ -72,7 +80,7 @@ export default function CommentItem({
       </div>
 
       {isSignedIn && isReplying ? <ReplyComposer commentId={comment._id} onSuccess={onCloseReply} /> : null}
-      <ReplyList replies={comment.replies ?? []} />
+      <ReplyList replies={comment.replies ?? []} isSignedIn={isSignedIn} signInHref={signInHref} />
     </article>
   );
 }
