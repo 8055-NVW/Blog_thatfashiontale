@@ -6,13 +6,19 @@ import { Types } from "mongoose";
 import Category from "@/models/Category";
 import "@/models/User";
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown error";
+}
+
 //VIEW posts
 export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     const searchKeywords = searchParams.get("keywords") as string;
     const categoryId = searchParams.get("categoryId");
-    const filter: any = {};
+    const filter: Record<string, unknown> = {};
+
+    await connect();
 
     if (searchKeywords) {
       filter.$or = [
@@ -40,16 +46,14 @@ export const GET = async (request: NextRequest) => {
       filter.category = categoryId;
     }
 
-    await connect();
-
     const posts = await Post.find(filter)
       .populate("category", "name slug")
       .populate("user", "name email");
 
     return new NextResponse(JSON.stringify({ posts }), { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return new NextResponse(
-      JSON.stringify({ message: "Failed to get posts", error: error.message }),
+      JSON.stringify({ message: "Failed to get posts", error: getErrorMessage(error) }),
       { status: 500 }
     );
   }
@@ -111,9 +115,9 @@ export const POST = async (request: Request) => {
             { status: 201 }
         )
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify(`Failed to create post - ${error.message}`),
+            JSON.stringify(`Failed to create post - ${getErrorMessage(error)}`),
             { status: 500 }
         )
     }
