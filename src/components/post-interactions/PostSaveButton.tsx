@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import ActionFeedback from "./ActionFeedback";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { formatSaveCount, getSaveLabel } from "./postSaveState";
@@ -61,21 +61,7 @@ export default function PostSaveButton({
     }
   }
 
-  const helperMessage = error ? (
-    <span id={messageId} className="text-amber-700">
-      {error}
-    </span>
-  ) : showSignInHint ? (
-    <span id={messageId} className="text-gray-500">
-      <Link
-        href={signInHref}
-        className="underline decoration-gray-300 underline-offset-4 transition hover:text-gray-900 hover:decoration-gray-700"
-      >
-        Sign in
-      </Link>{" "}
-      to save this post.
-    </span>
-  ) : null;
+  const helperMessage = error || showSignInHint;
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
@@ -87,10 +73,15 @@ export default function PostSaveButton({
         disabled={isSubmitting}
         className="rounded-full border border-black/10 px-3 py-1.5 font-medium text-gray-700 transition hover:border-black/20 hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-400"
       >
-        {isSubmitting ? "Saving..." : getSaveLabel(hasLiked)}
+        {isSubmitting ? "Updating..." : getSaveLabel(hasLiked)}
       </button>
       <span>{formatSaveCount(likeCount)}</span>
-      {helperMessage}
+      <ActionFeedback
+        messageId={messageId}
+        error={error}
+        signInHref={showSignInHint ? signInHref : undefined}
+        signInPrompt={showSignInHint ? "to save this post." : null}
+      />
     </div>
   );
 }

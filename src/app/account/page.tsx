@@ -92,7 +92,7 @@ export default async function AccountPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Saved posts</h2>
-            <p className="text-sm text-gray-600">Posts you have liked appear here.</p>
+            <p className="text-sm text-gray-600">Posts you save appear here.</p>
           </div>
           <p className="text-sm text-gray-500">{savedPosts.length} saved</p>
         </div>
@@ -101,7 +101,7 @@ export default async function AccountPage() {
           <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-8 text-center">
             <h3 className="text-base font-medium text-gray-900">No saved posts yet</h3>
             <p className="mt-2 text-sm text-gray-600">
-              Like a post and it will show up here.
+              Save a post and it will show up here.
             </p>
             <Link
               href="/"
@@ -134,7 +134,7 @@ export default async function AccountPage() {
 
                 <div className="min-w-0">
                   <p className="text-lg font-medium text-gray-900">{post.title}</p>
-                  <p className="mt-1 text-sm text-gray-500">Open saved post</p>
+                  <p className="mt-1 text-sm text-gray-500">Open post</p>
                 </div>
               </Link>
             ))}

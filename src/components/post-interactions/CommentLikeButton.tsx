@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import ActionFeedback from "./ActionFeedback";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { formatLikeCount } from "./discussionLikeState";
@@ -61,21 +61,7 @@ export default function CommentLikeButton({
     }
   }
 
-  const helperMessage = error ? (
-    <span id={messageId} className="text-amber-700">
-      {error}
-    </span>
-  ) : showSignInHint ? (
-    <span id={messageId} className="text-gray-500">
-      <Link
-        href={signInHref}
-        className="underline decoration-gray-300 underline-offset-4 transition hover:text-gray-900 hover:decoration-gray-700"
-      >
-        Sign in
-      </Link>{" "}
-      to like.
-    </span>
-  ) : null;
+  const helperMessage = error || showSignInHint;
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -87,10 +73,15 @@ export default function CommentLikeButton({
         disabled={isSubmitting}
         className="font-medium text-gray-600 transition hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-400"
       >
-        {isSubmitting ? "Saving..." : hasLiked ? "Liked" : "Like"}
+        {isSubmitting ? "Updating..." : hasLiked ? "Liked" : "Like"}
       </button>
       <span>{formatLikeCount(likeCount)}</span>
-      {helperMessage}
+      <ActionFeedback
+        messageId={messageId}
+        error={error}
+        signInHref={showSignInHint ? signInHref : undefined}
+        signInPrompt={showSignInHint ? "to like." : null}
+      />
     </div>
   );
 }

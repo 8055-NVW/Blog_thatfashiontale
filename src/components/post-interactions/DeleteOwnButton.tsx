@@ -1,5 +1,6 @@
 "use client";
 
+import ActionFeedback from "./ActionFeedback";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 
@@ -59,11 +60,7 @@ export default function DeleteOwnButton({ commentId, itemLabel }: DeleteOwnButto
       >
         {isSubmitting ? "Deleting..." : "Delete"}
       </button>
-      {error ? (
-        <span id={messageId} className="text-amber-700">
-          {error}
-        </span>
-      ) : null}
+      <ActionFeedback messageId={messageId} error={error} />
     </>
   );
 }

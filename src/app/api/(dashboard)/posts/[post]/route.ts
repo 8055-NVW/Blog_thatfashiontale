@@ -10,8 +10,14 @@ function getErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : "Unknown error";
 }
 
+type PostRouteContext = {
+    params: Promise<{
+        post: string;
+    }>;
+};
+
 //GET SINGLE POST
-export const GET = async (request: NextRequest, context: { params: { post: string } }) => {
+export const GET = async (request: NextRequest, context: PostRouteContext) => {
     try {
         const { post: postIdentifier } = await context.params;
 
@@ -49,7 +55,7 @@ export const GET = async (request: NextRequest, context: { params: { post: strin
 }
 
 // UPDATE post
-export const PATCH = async (request: NextRequest, context: { params: {post: string} }) => {
+export const PATCH = async (request: NextRequest, context: PostRouteContext) => {
   try {
     const session = await auth();
     const { post: postId } = await context.params;
@@ -120,7 +126,7 @@ export const PATCH = async (request: NextRequest, context: { params: {post: stri
 };
 
 //DELETE
-export const DELETE = async (request: NextRequest, context: { params: {post: string} }) => {
+export const DELETE = async (request: NextRequest, context: PostRouteContext) => {
     try {
         const session = await auth();
         const { post: postId } = await context.params;

@@ -68,7 +68,7 @@ export const DELETE = async (request: Request, context: CommentRouteContext) => 
 
     } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify({ message: "Failed to delete post", error: getErrorMessage(error) }),
+            JSON.stringify({ message: "Failed to delete comment", error: getErrorMessage(error) }),
             { status: 500 }
         )
     }
