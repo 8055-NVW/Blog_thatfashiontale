@@ -1,7 +1,9 @@
 import { getPublicPostBySlug } from "@/lib/api/posts";
 import { auth } from "@/auth";
 import { applyDiscussionLikeState } from "@/components/post-interactions/discussionLikeState";
+import PostSaveButton from "@/components/post-interactions/PostSaveButton";
 import PostDiscussion from "@/components/post-interactions/PostDiscussion";
+import { buildPostLikeCountLookup, buildPostLikeLookup } from "@/lib/likes/postLike";
 import connect from "@/lib/mongoose";
 import Like from "@/models/Like";
 import Image from "next/image";
@@ -115,6 +117,20 @@ async function getDiscussionLikeState(commentIds: string[], userId?: string) {
     return { countById, likedIds };
 }
 
+async function getPostSaveState(postId: string, userId?: string) {
+    await connect();
+
+    const [likeCount, existingLike] = await Promise.all([
+        Like.countDocuments(buildPostLikeCountLookup(postId)),
+        userId ? Like.findOne(buildPostLikeLookup(userId, postId)).select("_id") : Promise.resolve(null),
+    ]);
+
+    return {
+        likeCount,
+        hasLiked: Boolean(existingLike),
+    };
+}
+
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
     const { slug } = await params;
     const requestHeaders = await headers();
@@ -126,6 +142,10 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
 
     let post;
     let comments: DiscussionComment[] = [];
+    let postSaveState = {
+        likeCount: 0,
+        hasLiked: false,
+    };
 
     try {
         post = await getPublicPostBySlug(slug, { baseUrl });
@@ -144,6 +164,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
         const likeState = await getDiscussionLikeState(commentIds, session?.user?.id);
 
         comments = applyDiscussionLikeState(comments, likeState);
+        postSaveState = await getPostSaveState(post._id, session?.user?.id);
     } catch {
         notFound();
     }
@@ -168,6 +189,13 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                         {publishedDate}
                     </p>
                 )}
+                <PostSaveButton
+                    postId={post._id}
+                    hasLiked={postSaveState.hasLiked}
+                    isSignedIn={Boolean(session?.user?.id)}
+                    likeCount={postSaveState.likeCount}
+                    signInHref={`/signin?callbackUrl=/posts/${slug}`}
+                />
             </header>
 
             {post.image && (
