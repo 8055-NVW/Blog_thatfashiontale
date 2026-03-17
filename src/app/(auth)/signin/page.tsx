@@ -3,38 +3,32 @@
 
 import { SignInButton } from "@/components/SignInButton";
 import { auth } from "@/auth";
-import Image from "next/image";
-import { SignOutButton } from "@/components/SignOutButton";
+import { redirect } from "next/navigation";
+import { sanitizeCallbackUrl } from "@/lib/authRedirect";
 
-export default async function Home() {
+type SignInPageProps = {
+  searchParams?: Promise<{
+    callbackUrl?: string;
+  }>;
+};
+
+export default async function Home({ searchParams }: SignInPageProps) {
   const session = await auth();
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const callbackUrl = sanitizeCallbackUrl(resolvedSearchParams?.callbackUrl);
 
   console.log("Session user:", session?.user);
   // console.log("🔐 Server-side session:", session);
 
 
   if (session?.user) {
-    return (
-      <div>
-        <h1>Learning login</h1>
-        <p>User signed in with name: {session.user.name}</p>
-        <p>User signed in with email: {session.user.email}</p>
-        {session.user.image && <Image
-          src={session.user.image}
-          alt={session?.user?.name ?? "Avatar"}
-          width={45}
-          height={45}
-          style={{ borderRadius: "50%" }}
-        />}
-        <SignOutButton />
-      </div>
-    );
+    redirect(callbackUrl);
   }
   return (
     <>
       <div>
         <p>You are not Signed In</p>
-        <SignInButton />
+        <SignInButton callbackUrl={callbackUrl} />
       </div>
     </>
   );

@@ -1,9 +1,13 @@
 "use client"
 import { login } from "@/actions/authActions"
 
-export const SignInButton = () => {
+type SignInButtonProps = {
+    callbackUrl?: string;
+};
+
+export const SignInButton = ({ callbackUrl }: SignInButtonProps) => {
     return (
-        <button onClick={()=> login()}>
+        <button onClick={()=> login(callbackUrl)}>
             Sign in  With Google
         </button>
     )

@@ -54,7 +54,7 @@ export default async function AccountPage() {
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/signin");
+    redirect("/signin?callbackUrl=/account");
   }
 
   const savedPosts = await getSavedPosts(session.user.id);
