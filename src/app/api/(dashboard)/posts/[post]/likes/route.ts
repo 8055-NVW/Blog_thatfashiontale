@@ -1,5 +1,6 @@
 import connect from "@/lib/mongoose";
 import { requireSessionUserId } from "@/lib/auth/requireSessionUserId";
+import { buildPostLikeDocument, buildPostLikeLookup } from "@/lib/likes/postLike";
 import Like from "@/models/Like";
 import Post from "@/models/Post";
 import { Types } from "mongoose";
@@ -22,25 +23,6 @@ type PostRouteContext = {
 async function getPostIdFromContext(context: PostRouteContext) {
   const { post } = await context.params;
   return post;
-}
-
-function buildPostLikeLookup(userId: string, postId: string) {
-  return {
-    user: new Types.ObjectId(userId),
-    post: new Types.ObjectId(postId),
-    $or: [
-      { comment: null },
-      { comment: { $exists: false } },
-    ],
-  };
-}
-
-function buildPostLikeDocument(userId: string, postId: string) {
-  return {
-    user: new Types.ObjectId(userId),
-    post: new Types.ObjectId(postId),
-    comment: null,
-  };
 }
 
 // GET: Check like status

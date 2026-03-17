@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 import connect from "@/lib/mongoose";
+import { buildPostLikeCountLookup } from "@/lib/likes/postLike";
 import Like from "@/models/Like";
 
 export const GET = async (
@@ -16,13 +17,10 @@ export const GET = async (
         { status: 400 }
       );
     }
-
+    
     await connect();
 
-    const count = await Like.countDocuments({
-      post: postId,
-      comment: null,
-    });
+    const count = await Like.countDocuments(buildPostLikeCountLookup(postId));
 
     return NextResponse.json({ count });
   } catch (error) {
