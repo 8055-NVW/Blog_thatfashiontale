@@ -1,4 +1,5 @@
 import { getPublicPostBySlug } from "@/lib/api/posts";
+import { auth } from "@/auth";
 import PostDiscussion from "@/components/post-interactions/PostDiscussion";
 import Image from "next/image";
 import { headers } from "next/headers";
@@ -49,6 +50,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
     const protocol = requestHeaders.get("x-forwarded-proto")
         ?? (host?.includes("localhost") || host?.startsWith("127.0.0.1") ? "http" : "https");
     const baseUrl = host ? `${protocol}://${host}` : undefined;
+    const session = await auth();
 
     let post;
     let comments: DiscussionComment[] = [];
@@ -98,7 +100,13 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                 ))}
             </section>
 
-            <PostDiscussion comments={comments} formatDate={formatDate} signInHref={`/signin?callbackUrl=/posts/${slug}`} />
+            <PostDiscussion
+                comments={comments}
+                formatDate={formatDate}
+                postId={post._id}
+                isSignedIn={Boolean(session?.user?.id)}
+                signInHref={`/signin?callbackUrl=/posts/${slug}`}
+            />
         </article>
     );
 }
