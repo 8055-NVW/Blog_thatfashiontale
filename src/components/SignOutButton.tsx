@@ -1,9 +1,13 @@
 "use client"
 import { logout } from "@/actions/authActions"
 
-export const SignOutButton = () => {
+type SignOutButtonProps = {
+    className?: string;
+};
+
+export const SignOutButton = ({ className }: SignOutButtonProps) => {
     return (
-        <button onClick={()=> logout()}>
+        <button className={className} onClick={()=> logout()}>
             Sign Out
         </button>
     )

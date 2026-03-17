@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { SignOutButton } from "@/components/SignOutButton";
 
 export default function NavBar() {
     const { data: session, status } = useSession();
@@ -23,12 +24,15 @@ export default function NavBar() {
                     </nav>
 
                     {status === "loading" ? null : isSignedIn ? (
-                        <Link
-                            href="/account"
-                            className="rounded-full border border-black/10 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:border-black/20 hover:text-gray-900"
-                        >
-                            Account
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <Link
+                                href="/account"
+                                className="rounded-full border border-black/10 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:border-black/20 hover:text-gray-900"
+                            >
+                                Account
+                            </Link>
+                            <SignOutButton className="rounded-full border border-black/10 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:border-black/20 hover:text-gray-900" />
+                        </div>
                     ) : (
                         <Link
                             href="/signin?callbackUrl=/account"
