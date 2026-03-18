@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import NavBar from "@/components/layout/NavBar";
@@ -15,15 +16,30 @@ export const metadata: Metadata = {
   description: "Personal blog of Evy Antao",
 };
 
+const themeBootstrapScript = `
+(() => {
+  const storageKey = "theme-preference";
+  const root = document.documentElement;
+  const savedTheme = window.localStorage.getItem(storageKey);
+  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  const theme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : systemTheme;
+  root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${instrumentSans.variable} antialiased`}>
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {themeBootstrapScript}
+        </Script>
         <SessionProvider>
           <NavBar />
           <main className="min-h-screen">{children}</main>
