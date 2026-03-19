@@ -14,7 +14,7 @@ export default function CommentList({ comments, isSignedIn, signInHref }: Commen
   const [activeReplyCommentId, setActiveReplyCommentId] = useState<string | null>(null);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {comments.map((comment) => (
         <CommentItem
           key={comment._id}

@@ -15,7 +15,7 @@ export default function ActionFeedback({
 }: ActionFeedbackProps) {
   if (error) {
     return (
-      <span id={messageId} className="text-amber-700">
+      <span id={messageId} className="text-danger">
         {error}
       </span>
     );
@@ -23,10 +23,10 @@ export default function ActionFeedback({
 
   if (signInHref && signInPrompt) {
     return (
-      <span id={messageId} className="text-gray-500">
+      <span id={messageId} className="text-fg-subtle">
         <Link
           href={signInHref}
-          className="underline decoration-gray-300 underline-offset-4 transition hover:text-gray-900 hover:decoration-gray-700"
+          className="underline decoration-border-strong underline-offset-4 transition hover:text-fg hover:decoration-fg-muted"
         >
           Sign in
         </Link>{" "}

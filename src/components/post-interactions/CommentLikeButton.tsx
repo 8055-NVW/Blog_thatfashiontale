@@ -71,11 +71,11 @@ export default function CommentLikeButton({
         aria-describedby={helperMessage ? messageId : undefined}
         onClick={handleToggleLike}
         disabled={isSubmitting}
-        className="font-medium text-gray-600 transition hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-400"
+        className="font-medium text-fg-muted transition hover:text-fg disabled:cursor-not-allowed disabled:text-fg-subtle"
       >
         {isSubmitting ? "Updating..." : hasLiked ? "Liked" : "Like"}
       </button>
-      <span>{formatLikeCount(likeCount)}</span>
+      <span className="text-fg-subtle">{formatLikeCount(likeCount)}</span>
       <ActionFeedback
         messageId={messageId}
         error={error}

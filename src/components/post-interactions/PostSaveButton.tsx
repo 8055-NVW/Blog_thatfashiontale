@@ -64,18 +64,18 @@ export default function PostSaveButton({
   const helperMessage = error || showSignInHint;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-border bg-surface px-3 py-2 text-sm text-fg-muted shadow-[var(--shadow-soft)]">
       <button
         type="button"
         aria-pressed={isSignedIn ? hasLiked : undefined}
         aria-describedby={helperMessage ? messageId : undefined}
         onClick={handleToggleSave}
         disabled={isSubmitting}
-        className="rounded-full border border-black/10 px-3 py-1.5 font-medium text-gray-700 transition hover:border-black/20 hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-400"
+        className="rounded-full border border-border bg-subtle px-3 py-1.5 font-medium text-fg transition hover:border-border-strong hover:bg-accent-soft disabled:cursor-not-allowed disabled:text-fg-subtle"
       >
         {isSubmitting ? "Updating..." : getSaveLabel(hasLiked)}
       </button>
-      <span>{formatSaveCount(likeCount)}</span>
+      <span className="text-fg-muted">{formatSaveCount(likeCount)}</span>
       <ActionFeedback
         messageId={messageId}
         error={error}

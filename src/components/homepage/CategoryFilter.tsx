@@ -16,28 +16,32 @@ export default function CategoryFilter({
   }
 
   return (
-    <section className="px-4">
-      <div className="mb-4 flex items-center justify-between gap-4">
+    <section className="space-y-5">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Browse by Category</h2>
-          <p className="mt-1 text-sm text-gray-600">Pick a topic to narrow the reading list, or keep everything in view.</p>
+          <p className="text-[11px] uppercase tracking-[0.3em] text-fg-subtle">Browse</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-fg md:text-3xl">Explore the archive by category</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-fg-muted md:text-base">
+            Narrow the reading list when you want something specific, or keep every story in view.
+          </p>
         </div>
         {selectedCategoryId !== null && (
           <button
             onClick={() => onCategorySelect(null)}
-            className="shrink-0 text-sm font-medium text-gray-700 underline underline-offset-4 transition hover:text-gray-950"
+            className="shrink-0 text-sm font-medium text-fg-muted underline decoration-border-strong underline-offset-4 transition hover:text-fg"
           >
             Clear filter
           </button>
         )}
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-2">
+
+      <div className="flex gap-3 overflow-x-auto pb-2">
         <button
           onClick={() => onCategorySelect(null)}
-          className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition border ${
+          className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${
             selectedCategoryId === null
-              ? "bg-black text-white"
-              : "bg-white text-black border-gray-300 hover:bg-gray-100"
+              ? "border-accent bg-accent text-fg-inverse"
+              : "border-border bg-surface text-fg-muted hover:border-border-strong hover:bg-accent-soft hover:text-fg"
           }`}
         >
           All
@@ -46,10 +50,10 @@ export default function CategoryFilter({
           <button
             key={category._id}
             onClick={() => onCategorySelect(category._id)}
-            className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition border ${
+            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${
               selectedCategoryId === category._id
-                ? "bg-black text-white"
-                : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                ? "border-accent bg-accent text-fg-inverse"
+                : "border-border bg-surface text-fg-muted hover:border-border-strong hover:bg-accent-soft hover:text-fg"
             }`}
           >
             {category.name}

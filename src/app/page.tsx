@@ -23,16 +23,16 @@ export default async function HomePage() {
   const posts = allPosts.posts
 
   return (
-    <div className="space-y-20 px-4 md:px-8 py-10 max-w-7xl mx-auto" style={{ backgroundColor: "#f8f5f2" }}>
-        <Hero/>
+    <div className="shell-container space-y-16 py-10 md:space-y-20 md:py-14">
+        <Hero postCount={posts.length} categoryCount={allCategories.length} />
         <section id="featured-post">
           <Featured posts={posts}/>
         </section>
-        {/* <CategoryFilter categories={allCategories}/>
-        <PostGrid posts={posts}/> */}
         <CategoryPostView posts={posts} categories={allCategories} />
-        <AboutMe/>
-        <GetInTouch/>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <AboutMe/>
+          <GetInTouch/>
+        </div>
     </div>
   );
 }

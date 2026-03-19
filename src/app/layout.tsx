@@ -36,13 +36,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${instrumentSans.variable} antialiased`}>
+        className={`${instrumentSans.variable} flex min-h-screen flex-col antialiased`}>
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {themeBootstrapScript}
         </Script>
         <SessionProvider>
           <NavBar />
-          <main className="min-h-screen">{children}</main>
+          <main className="flex-1 pb-10 md:pb-14">{children}</main>
           <Footer />
         </SessionProvider>
       </body>

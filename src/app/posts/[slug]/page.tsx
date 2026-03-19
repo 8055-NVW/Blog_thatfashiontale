@@ -178,19 +178,27 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
         .filter(Boolean);
 
     return (
-        <article className="max-w-3xl mx-auto px-4 py-10 space-y-8">
-            <header className="space-y-4">
-                <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
-                    {post.category?.name ?? "Post"}
-                </p>
-                <h1 className="text-4xl font-bold leading-tight text-gray-900">{post.title}</h1>
-                {(post.user?.name || publishedDate) && (
-                    <p className="text-sm text-gray-600">
-                        {post.user?.name ? `By ${post.user.name}` : null}
-                        {post.user?.name && publishedDate ? " - " : null}
-                        {publishedDate}
-                    </p>
-                )}
+        <article className="content-container space-y-10 px-4 py-10 md:space-y-12 md:py-14">
+            <header className="space-y-6">
+                <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.24em] text-fg-subtle">
+                        <span>{post.category?.name ?? "Post"}</span>
+                        {publishedDate ? <span>{publishedDate}</span> : null}
+                    </div>
+
+                    <h1 className="max-w-4xl text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-fg md:text-5xl lg:text-[3.6rem]">
+                        {post.title}
+                    </h1>
+
+                    {(post.user?.name || publishedDate) && (
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-fg-muted md:text-base">
+                            {post.user?.name ? <span>By {post.user.name}</span> : null}
+                            {post.user?.name && publishedDate ? <span aria-hidden="true" className="text-fg-subtle">/</span> : null}
+                            <span>Editorial reading</span>
+                        </div>
+                    )}
+                </div>
+
                 <PostSaveButton
                     postId={post._id}
                     hasLiked={postSaveState.hasLiked}
@@ -201,18 +209,22 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
             </header>
 
             {post.image && (
-                <Image
-                    src={post.image}
-                    alt={post.title}
-                    width={1200}
-                    height={675}
-                    className="w-full rounded-2xl object-cover shadow-sm"
-                />
+                <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+                    <Image
+                        src={post.image}
+                        alt={post.title}
+                        width={1200}
+                        height={900}
+                        className="aspect-[16/10] w-full object-cover"
+                    />
+                </div>
             )}
 
-            <section className="space-y-5 text-base leading-8 text-gray-800">
+            <section className="space-y-6 text-lg leading-9 text-fg md:space-y-7 md:text-[1.15rem] md:leading-10">
                 {contentParagraphs.map((paragraph, index) => (
-                    <p key={`${slug}-${index}`}>{paragraph}</p>
+                    <p key={`${slug}-${index}`} className="max-w-[68ch] text-fg">
+                        {paragraph}
+                    </p>
                 ))}
             </section>
 

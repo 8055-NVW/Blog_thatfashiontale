@@ -24,7 +24,7 @@ export default function CategoryPostView({ posts, categories }: Props) {
     : posts;
 
   return (
-    <section id="browse-posts" className="space-y-6">
+    <section id="browse-posts" className="space-y-8">
       <CategoryFilter
         categories={categories}
         selectedCategoryId={selectedCategoryId}
@@ -32,9 +32,9 @@ export default function CategoryPostView({ posts, categories }: Props) {
       />
 
       {selectedCategory && (
-        <div className="px-4">
-          <div className="rounded-2xl border border-black/5 bg-white/80 px-5 py-4 text-sm text-gray-700 shadow-sm">
-            <span className="font-semibold text-gray-900">Now browsing:</span>{" "}
+        <div>
+          <div className="rounded-lg border border-border bg-subtle px-5 py-4 text-sm leading-6 text-fg-muted shadow-[var(--shadow-soft)]">
+            <span className="font-semibold text-fg">Now browsing:</span>{" "}
             {selectedCategory.name}.
             {" "}
             <span>

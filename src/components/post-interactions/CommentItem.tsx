@@ -46,14 +46,14 @@ export default function CommentItem({
   const replyCount = comment.replies?.length ?? 0;
 
   return (
-    <article className="rounded-2xl border border-black/10 bg-[#fcfaf8] p-5">
-      <div>
-        <p className="font-medium text-gray-900">{comment.user?.name ?? "Reader"}</p>
-        {commentDate ? <p className="text-sm text-gray-500">{commentDate}</p> : null}
+    <article className="rounded-lg border border-border bg-subtle px-5 py-5 md:px-6">
+      <div className="space-y-1">
+        <p className="font-medium text-fg">{comment.user?.name ?? "Reader"}</p>
+        {commentDate ? <p className="text-sm text-fg-subtle">{commentDate}</p> : null}
       </div>
-      <p className="mt-4 text-base leading-7 text-gray-800">{comment.content}</p>
+      <p className="mt-4 text-base leading-8 text-fg">{comment.content}</p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-fg-muted">
         <CommentLikeButton
           commentId={comment._id}
           hasLiked={comment.hasLiked ?? false}
@@ -65,14 +65,14 @@ export default function CommentItem({
           <button
             type="button"
             onClick={onToggleReply}
-            className="font-medium text-gray-700 transition hover:text-gray-900"
+            className="font-medium text-fg-muted transition hover:text-fg"
           >
             {isReplying ? "Cancel reply" : "Reply"}
           </button>
         ) : (
           <Link
             href={signInHref}
-            className="font-medium text-gray-700 underline decoration-gray-300 underline-offset-4 transition hover:text-gray-900 hover:decoration-gray-700"
+            className="font-medium text-fg-muted underline decoration-border-strong underline-offset-4 transition hover:text-fg hover:decoration-fg-muted"
           >
             Sign in to reply
           </Link>

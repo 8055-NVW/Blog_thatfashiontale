@@ -57,18 +57,23 @@ export default function ThemeToggle() {
   }
 
   const isDark = theme === "dark";
+  const nextThemeLabel = isDark ? "light" : "dark";
 
   return (
     <button
       type="button"
       onClick={handleToggle}
-      className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-fg-muted transition hover:border-border-strong hover:bg-accent-soft hover:text-fg"
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-sm font-medium text-fg-muted transition hover:border-border-strong hover:bg-accent-soft hover:text-fg"
+      aria-label={`Switch to ${nextThemeLabel} mode`}
       aria-pressed={isDark}
-      title={`Switch to ${isDark ? "light" : "dark"} mode`}
+      title={`Switch to ${nextThemeLabel} mode`}
     >
-      <span aria-hidden="true">{isDark ? "Dark" : "Light"}</span>
-      <span aria-hidden="true" className="text-fg-subtle">{isDark ? "Moon" : "Sun"}</span>
+      <span aria-hidden="true" className="hidden sm:inline text-fg-subtle">Theme</span>
+      <span aria-hidden="true" className="text-fg">Switch to {nextThemeLabel}</span>
+      <span
+        aria-hidden="true"
+        className={`h-2.5 w-2.5 rounded-full ${isDark ? "bg-accent" : "bg-warning"}`}
+      />
     </button>
   );
 }

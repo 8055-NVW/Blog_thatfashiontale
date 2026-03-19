@@ -9,7 +9,8 @@ type SignInButtonProps = {
 export const SignInButton = ({ callbackUrl, className }: SignInButtonProps) => {
     return (
         <button
-            className={className ?? "rounded-full bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"}
+            type="button"
+            className={className ?? "inline-flex w-full items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-medium text-fg-inverse transition hover:bg-accent-hover"}
             onClick={()=> login(callbackUrl)}
         >
             Sign in with Google

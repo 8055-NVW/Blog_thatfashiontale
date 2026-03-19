@@ -13,12 +13,12 @@ type PostDiscussionProps = {
 
 export default function PostDiscussion({ comments, postId, isSignedIn, signInHref = "/signin" }: PostDiscussionProps) {
   return (
-    <section className="space-y-6 rounded-2xl border border-black/10 bg-white/80 p-6 shadow-sm">
+    <section className="space-y-6 rounded-xl border border-border bg-surface px-5 py-6 shadow-[var(--shadow-soft)] md:px-7 md:py-7">
       <DiscussionHeader count={comments.length} />
       {isSignedIn ? <CommentComposer postId={postId} /> : <SignInPrompt signInHref={signInHref} />}
 
       {comments.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-8 text-center text-sm text-gray-600">
+        <div className="rounded-lg border border-dashed border-border bg-subtle px-5 py-8 text-center text-sm text-fg-muted">
           No comments yet.
         </div>
       ) : (

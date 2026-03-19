@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 
 type ReplyComposerProps = {
   commentId: string;
@@ -10,6 +10,7 @@ type ReplyComposerProps = {
 
 export default function ReplyComposer({ commentId, onSuccess }: ReplyComposerProps) {
   const router = useRouter();
+  const contentFieldId = useId();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,35 +53,42 @@ export default function ReplyComposer({ commentId, onSuccess }: ReplyComposerPro
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-2xl border border-black/10 bg-[#faf7f4] p-4">
-      <textarea
-        value={content}
-        onChange={(event) => {
-          setContent(event.target.value);
-          if (error) setError(null);
-        }}
-        rows={3}
-        maxLength={1000}
-        placeholder="Write a reply..."
-        disabled={isSubmitting}
-        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 disabled:cursor-not-allowed disabled:bg-gray-50 md:text-base"
-      />
+    <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-lg border border-border bg-surface px-4 py-4 shadow-[var(--shadow-soft)]">
+      <div className="space-y-2">
+        <label htmlFor={contentFieldId} className="block text-sm font-medium text-fg-muted">
+          Reply
+        </label>
+
+        <textarea
+          id={contentFieldId}
+          value={content}
+          onChange={(event) => {
+            setContent(event.target.value);
+            if (error) setError(null);
+          }}
+          rows={3}
+          maxLength={1000}
+          placeholder="Write a reply..."
+          disabled={isSubmitting}
+          className="w-full rounded-lg border border-border bg-subtle px-4 py-3 text-sm text-fg outline-none transition placeholder:text-fg-subtle focus:border-border-strong disabled:cursor-not-allowed disabled:text-fg-subtle md:text-base"
+        />
+      </div>
 
       <div className="flex items-center justify-between gap-3">
-        <div className="min-h-5 text-sm text-red-600">{error}</div>
+        <div className="min-h-5 text-sm text-danger">{error}</div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onSuccess}
             disabled={isSubmitting}
-            className="rounded-full px-3 py-2 text-sm font-medium text-gray-600 transition hover:text-gray-900 disabled:cursor-not-allowed disabled:text-gray-400"
+            className="rounded-full px-3 py-2 text-sm font-medium text-fg-muted transition hover:text-fg disabled:cursor-not-allowed disabled:text-fg-subtle"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting || content.trim().length === 0}
-            className="rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+            className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-fg-inverse transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-surface-strong disabled:text-fg-subtle"
           >
             {isSubmitting ? "Posting..." : "Reply"}
           </button>

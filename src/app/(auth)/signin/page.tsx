@@ -19,18 +19,21 @@ export default async function Home({ searchParams }: SignInPageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-xl items-center px-4 py-12">
-      <section className="w-full rounded-3xl border border-black/10 bg-white p-8 shadow-sm">
-        <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Sign in</p>
-        <div className="mt-4 space-y-3">
-          <h1 className="text-3xl font-semibold text-gray-900">Continue your reading</h1>
-          <p className="text-sm leading-7 text-gray-600">
+    <div className="form-container flex min-h-[70vh] items-center px-4 py-12 md:py-16">
+      <section className="w-full rounded-xl border border-border bg-surface px-7 py-8 shadow-[var(--shadow-soft)] md:px-8 md:py-9">
+        <p className="text-[11px] uppercase tracking-[0.28em] text-fg-subtle">Sign in</p>
+        <div className="mt-4 space-y-4">
+          <h1 className="text-3xl font-semibold tracking-[-0.03em] text-fg md:text-[2.15rem]">Continue your reading</h1>
+          <p className="text-sm leading-7 text-fg-muted md:text-base md:leading-8">
             Sign in to save posts, join the discussion, and pick up where you left off.
           </p>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 rounded-lg border border-border bg-subtle px-5 py-5">
           <SignInButton callbackUrl={callbackUrl} />
+          <p className="mt-4 text-sm leading-6 text-fg-muted">
+            You&apos;ll return to the same story or page after signing in.
+          </p>
         </div>
       </section>
     </div>
