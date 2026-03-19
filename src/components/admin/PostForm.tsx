@@ -30,6 +30,7 @@ export default function PostForm({
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
     const [showHotspotModal, setShowHotspotModal] = useState(false);
     const hasHotspots = form.hotspots && form.hotspots.length > 0
+    const hasImage = Boolean(form.image.trim());
 
     useEffect(() => {
         setForm(initialForm)
@@ -78,9 +79,19 @@ export default function PostForm({
                                 Add an image first, then place and edit hotspots for public product notes.
                             </p>
                         </div>
+                        {hasImage ? (
+                            <p className="text-sm text-fg-muted">
+                                {hasHotspots ? `${form.hotspots.length} marker${form.hotspots.length === 1 ? "" : "s"} currently in this draft.` : "No hotspots added yet."}
+                            </p>
+                        ) : (
+                            <p className="rounded-lg border border-dashed border-border-strong bg-subtle px-3 py-2 text-sm text-fg-muted">
+                                Enter a lead image URL to enable hotspot placement.
+                            </p>
+                        )}
                         <button
                             type="button"
                             className="btn-secondary w-full sm:w-auto"
+                            disabled={!hasImage}
                             onClick={() => setShowHotspotModal(true)}
                         >
                             {hasHotspots ? "Edit Hotspots" : "+ Add Hotspot"}

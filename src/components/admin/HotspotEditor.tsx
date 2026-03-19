@@ -1,5 +1,6 @@
 "use client"
 
+import { getHotspotValidation } from "@/lib/adminHotspotAuthoring";
 import { useState } from "react"
 import { HotspotType, HotspotItem } from "@/types/HotspotType"
 
@@ -12,6 +13,7 @@ interface Props {
 export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
 
     const [linkInput, setLinkInput] = useState("");
+    const validation = getHotspotValidation(hotspot);
 
     const handleScrape = async (target: "primary" | "related") => {
     try {
@@ -69,7 +71,22 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
       <div className="space-y-1">
         <p className="meta-label">Hotspot editor</p>
         <h3 className="text-lg font-semibold text-fg">Hotspot Products</h3>
+        <p className="text-sm leading-6 text-fg-muted">
+          Assign one primary item to keep this marker. Related items are optional references.
+        </p>
       </div>
+
+      {!validation.isSavable ? (
+        <p className="rounded-lg border border-dashed border-danger/40 bg-danger/8 px-3 py-2 text-sm text-danger">
+          This marker needs a primary item with a valid link before it can be saved.
+        </p>
+      ) : null}
+
+      {validation.invalidRelatedItemCount > 0 ? (
+        <p className="rounded-lg border border-dashed border-border-strong bg-surface px-3 py-2 text-sm text-fg-muted">
+          Related items without links will be skipped on save.
+        </p>
+      ) : null}
 
       {/* Link Input */}
       <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
@@ -90,7 +107,10 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
       {/* Primary Item */}
       {hotspot.primary && (
         <div className="admin-subcard space-y-3 p-4">
-          <h4 className="font-semibold text-fg">Primary Product</h4>
+          <div className="space-y-1">
+            <h4 className="font-semibold text-fg">Primary Product</h4>
+            <p className="text-sm text-fg-muted">This is the only item shown in the public hotspot modal right now.</p>
+          </div>
           <input
             value={hotspot.primary.title}
             onChange={(e) => updateItem("title", e.target.value, true)}
@@ -123,7 +143,10 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
       {/* Related Items */}
       {hotspot.related.length > 0 && (
         <div className="space-y-4">
-          <h4 className="font-semibold text-fg">Related Products</h4>
+          <div className="space-y-1">
+            <h4 className="font-semibold text-fg">Related Products</h4>
+            <p className="text-sm text-fg-muted">Optional references for later expansion. Add links if you want them kept in the draft.</p>
+          </div>
           {hotspot.related.map((item, index) => (
             <div
               key={index}
