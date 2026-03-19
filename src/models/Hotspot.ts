@@ -8,12 +8,14 @@ const HotspotSchema = new Schema(
       title: String,
       link: { type: String, required: true },
       image: String,
+      price: String,
     },
     related: [
       {
         title: String,
         link: { type: String, required: true },
         image: String,
+        price: String,
       },
     ],
   },

@@ -2,6 +2,7 @@ export type HotspotItem = {
   title?: string;
   link: string;
   image?: string;
+  price?: string;
 };
 
 export type HotspotType = {

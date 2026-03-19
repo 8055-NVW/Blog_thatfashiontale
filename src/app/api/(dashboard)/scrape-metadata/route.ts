@@ -9,6 +9,22 @@ type ImageCandidate = {
     url?: string;
 };
 
+function formatPrice(amount?: string, currency?: string) {
+    const trimmedAmount = amount?.trim();
+
+    if (!trimmedAmount) {
+        return undefined;
+    }
+
+    const trimmedCurrency = currency?.trim();
+
+    if (!trimmedCurrency) {
+        return trimmedAmount;
+    }
+
+    return `${trimmedCurrency} ${trimmedAmount}`;
+}
+
 function getImageUrl(value: unknown): string | undefined {
     if (Array.isArray(value)) {
         const first = value[0];
@@ -38,10 +54,16 @@ export const POST = async (request: Request) => {
         const ogImage = getImageUrl(result.ogImage as ImageCandidate | ImageCandidate[] | undefined);
         const twitterImage = getImageUrl(result.twitterImage as ImageCandidate | ImageCandidate[] | undefined);
         
-            const item = {
+        const price = formatPrice(
+            result.ogProductPriceAmount || result.ogPriceAmount,
+            result.ogProductPriceCurrency || result.ogPriceCurrency
+        );
+
+        const item = {
             title: result.ogTitle || result.twitterTitle || "Untitled",
             image: ogImage || twitterImage || "",
             link: url,
+            price,
         };
 
         return NextResponse.json(item);

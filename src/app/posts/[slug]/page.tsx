@@ -7,11 +7,11 @@ import PostDiscussion from "@/components/post-interactions/PostDiscussion";
 import { buildPostLikeCountLookup, buildPostLikeLookup } from "@/lib/likes/postLike";
 import connect from "@/lib/mongoose";
 import Like from "@/models/Like";
-import Image from "next/image";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { DiscussionComment } from "@/components/post-interactions/types";
 import { Types } from "mongoose";
+import PostHotspots from "@/components/posts/PostHotspots";
 
 type PostDetailPageProps = {
     params: Promise<{
@@ -209,15 +209,11 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
             </header>
 
             {post.image && (
-                <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)]">
-                    <Image
-                        src={post.image}
-                        alt={post.title}
-                        width={1200}
-                        height={900}
-                        className="aspect-[16/10] w-full object-cover"
-                    />
-                </div>
+                <PostHotspots
+                    image={post.image}
+                    title={post.title}
+                    hotspots={post.hotspots}
+                />
             )}
 
             <section className="space-y-6 text-lg leading-9 text-fg md:space-y-7 md:text-[1.15rem] md:leading-10">

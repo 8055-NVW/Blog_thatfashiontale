@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function Footer() {
+    const { data: session, status } = useSession();
+    const authHref = session?.user ? "/account" : "/signin?callbackUrl=/account";
+    const authLabel = session?.user ? "Account" : "Sign in";
+
     return (
         <footer className="mt-16 border-t border-border bg-subtle">
             <div className="shell-container flex flex-col gap-6 py-8 md:flex-row md:items-end md:justify-between md:py-10">
@@ -16,7 +23,9 @@ export default function Footer() {
                         <Link href="/" className="transition hover:text-fg">Home</Link>
                         <Link href="/#browse-posts" className="transition hover:text-fg">Archive</Link>
                         <Link href="/#featured-post" className="transition hover:text-fg">Featured</Link>
-                        <Link href="/signin?callbackUrl=/account" className="transition hover:text-fg">Sign in</Link>
+                        {status === "loading" ? null : (
+                            <Link href={authHref} className="transition hover:text-fg">{authLabel}</Link>
+                        )}
                     </nav>
                     <p className="text-xs uppercase tracking-[0.18em] text-fg-subtle">© 2025 That Fashion Tale</p>
                 </div>

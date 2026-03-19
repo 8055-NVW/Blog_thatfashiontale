@@ -25,6 +25,7 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
         title: data.title || "",
         link: data.link || linkInput,
         image: data.image || "",
+        price: data.price || "",
       };
 
       if (target === "primary") {
@@ -36,7 +37,7 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
       setLinkInput("");
     } catch {
       alert("Scrape failed. You can enter manually.");
-      const fallback: HotspotItem = { title: "", link: linkInput, image: "" };
+      const fallback: HotspotItem = { title: "", link: linkInput, image: "", price: "" };
 
       if (target === "primary") {
         onChange({ ...hotspot, primary: fallback });
