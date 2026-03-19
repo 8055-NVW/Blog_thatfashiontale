@@ -5,6 +5,7 @@ import Post from "@/models/Post";
 import { Types } from "mongoose";
 import Category from "@/models/Category";
 import "@/models/User";
+import { normalizeHotspots } from "@/lib/hotspotNormalization";
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";
@@ -98,14 +99,15 @@ export const POST = async (request: Request) => {
                 { status: 404 }
             )
         }
-        console.log("Hotspots received:", hotspots);
+        const normalizedHotspots = normalizeHotspots(hotspots);
+
         const newPost = new Post({
             title,
             slug,
             content,
             category: new Types.ObjectId(categoryId),
             image,
-            hotspots,
+            hotspots: normalizedHotspots,
             user: new Types.ObjectId(session.user.id)
         })
         await newPost.save();

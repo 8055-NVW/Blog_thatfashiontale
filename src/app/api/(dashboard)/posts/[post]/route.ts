@@ -5,6 +5,7 @@ import "@/models/Category";
 import "@/models/User";
 import { Types } from "mongoose";
 import { auth } from "@/auth";
+import { normalizeHotspots } from "@/lib/hotspotNormalization";
 
 function getErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : "Unknown error";
@@ -89,7 +90,6 @@ export const PATCH = async (request: NextRequest, context: PostRouteContext) => 
         { status: 400 }
       );
     }
-    console.log(category)
     if (!category || !Types.ObjectId.isValid(category)) {
       return new NextResponse(
         JSON.stringify({ message: "Invalid or missing category" }),
@@ -97,11 +97,13 @@ export const PATCH = async (request: NextRequest, context: PostRouteContext) => 
       );
     }
 
+    const normalizedHotspots = normalizeHotspots(hotspots);
+
     await connect();
 
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
-      { title, slug, content, category, image, hotspots },
+      { title, slug, content, category, image, hotspots: normalizedHotspots },
       { new: true }
     );
 
