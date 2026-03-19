@@ -1,5 +1,6 @@
 "use client"
 
+import { extractApiMessage } from "@/lib/adminFeedback";
 import { getHotspotValidation } from "@/lib/adminHotspotAuthoring";
 import { useState } from "react"
 import { HotspotType, HotspotItem } from "@/types/HotspotType"
@@ -14,15 +15,23 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
 
     const [linkInput, setLinkInput] = useState("");
     const validation = getHotspotValidation(hotspot);
+    const [scrapeError, setScrapeError] = useState<string | null>(null);
 
     const handleScrape = async (target: "primary" | "related") => {
     try {
+      setScrapeError(null);
       const res = await fetch("/api/scrape-metadata", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: linkInput }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        setScrapeError(extractApiMessage(data, "Metadata scrape failed. You can still enter the item manually."));
+        return;
+      }
+
       const item: HotspotItem = {
         title: data.title || "",
         link: data.link || linkInput,
@@ -38,16 +47,7 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
 
       setLinkInput("");
     } catch {
-      alert("Scrape failed. You can enter manually.");
-      const fallback: HotspotItem = { title: "", link: linkInput, image: "", price: "" };
-
-      if (target === "primary") {
-        onChange({ ...hotspot, primary: fallback });
-      } else {
-        onChange({ ...hotspot, related: [...hotspot.related, fallback] });
-      }
-
-      setLinkInput("");
+      setScrapeError("Metadata scrape failed. You can still enter the item manually.");
     }
   };
 
@@ -89,24 +89,30 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
       ) : null}
 
       {/* Link Input */}
-      <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
+      <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto]">
         <input
           placeholder="Paste product link"
           value={linkInput}
           onChange={(e) => setLinkInput(e.target.value)}
           className="input"
         />
-        <button type="button" onClick={() => handleScrape("primary")} className="btn-secondary">
+        <button type="button" onClick={() => handleScrape("primary")} className="btn-secondary w-full md:w-auto">
           Add as Primary
         </button>
-        <button type="button" onClick={() => handleScrape("related")} className="btn">
+        <button type="button" onClick={() => handleScrape("related")} className="btn w-full md:w-auto">
           + Related
         </button>
       </div>
 
+      {scrapeError ? (
+        <p className="rounded-lg border border-dashed border-danger/40 bg-danger/8 px-3 py-2 text-sm text-danger">
+          {scrapeError}
+        </p>
+      ) : null}
+
       {/* Primary Item */}
       {hotspot.primary && (
-        <div className="admin-subcard space-y-3 p-4">
+        <div className="admin-subcard space-y-3 p-4 md:p-5">
           <div className="space-y-1">
             <h4 className="font-semibold text-fg">Primary Product</h4>
             <p className="text-sm text-fg-muted">This is the only item shown in the public hotspot modal right now.</p>
@@ -150,7 +156,7 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
           {hotspot.related.map((item, index) => (
             <div
               key={index}
-              className="admin-subcard relative space-y-3 p-4"
+              className="admin-subcard relative space-y-3 p-4 md:p-5"
             >
               <button
                 type="button"
@@ -190,7 +196,7 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
         </div>
       )}
 
-      <button type="button" onClick={onDelete} className="btn-danger mt-2">
+      <button type="button" onClick={onDelete} className="btn-danger mt-2 w-full sm:w-auto">
         Delete This Hotspot
       </button>
     </div>

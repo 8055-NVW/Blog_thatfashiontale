@@ -1,9 +1,12 @@
 "use client";
 
+import AdminNotice from "./AdminNotice";
+import PublicConfirmDialog from "@/components/post-interactions/PublicConfirmDialog";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PostWithCategory } from "@/types/PostViewType";
 import { deletePost, getPosts } from "@/lib/api/posts";
+import { extractApiMessage } from "@/lib/adminFeedback";
 
 type Props = {
     categoryId?: string;
@@ -17,6 +20,9 @@ export default function PostsList({ categoryId }: Props) {
     const [posts, setPosts] = useState<PostWithCategory[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null)
+    const [notice, setNotice] = useState<string | null>(null)
+    const [pendingDeletePost, setPendingDeletePost] = useState<PostWithCategory | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
 
     const fetchPosts = useCallback(async () => {
@@ -24,6 +30,7 @@ export default function PostsList({ categoryId }: Props) {
             const data = await getPosts({ categoryId })
             setPosts(data.posts || []);
             setError(null);
+            setNotice(null);
         } catch (err) {
             console.error("Failed to fetch posts", err);
             setError(getErrorMessage(err));
@@ -36,32 +43,39 @@ export default function PostsList({ categoryId }: Props) {
         fetchPosts();
     }, [fetchPosts]);
 
-    const handleDelete = async (postId: string) => {
-        if (!confirm("Delete this post?")) return;
+    const handleDelete = async () => {
+        if (!pendingDeletePost || isDeleting) return;
 
+        setIsDeleting(true);
         try {
-            const res = await deletePost(postId);
+            const res = await deletePost(pendingDeletePost._id);
+            const payload = await res.json().catch(() => null);
             if (res.ok) {
-                setPosts(prev => prev.filter(p => p._id !== postId));
+                setPosts(prev => prev.filter(p => p._id !== pendingDeletePost._id));
+                setNotice(`Deleted “${pendingDeletePost.title}”.`);
+                setPendingDeletePost(null);
             } else {
-                alert("Failed to delete post.");
+                setError(extractApiMessage(payload, "Failed to delete post."));
             }
         } catch (err) {
             setError(getErrorMessage(err));
             console.error("Delete error:", err);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
     if (loading) {
-        return <p>Loading posts...</p>;
+        return <AdminNotice message="Loading posts..." />;
     }
 
     if (error) {
-        return <p>Error: {error}</p>;
+        return <AdminNotice tone="error" message={error} />;
     }
 
     return (
         <div className="space-y-4">
+            {notice ? <AdminNotice tone="success" message={notice} /> : null}
             <button
                 className="btn-primary"
                 onClick={() => router.push("/admin/posts/create")}
@@ -84,23 +98,27 @@ export default function PostsList({ categoryId }: Props) {
                                 className="h-24 w-full rounded-lg border border-border object-cover sm:w-24"
                             />
                         )}
-                        <div className="flex-1">
+                        <div className="min-w-0 flex-1">
                             <h3 className="text-lg font-semibold text-fg">{post.title}</h3>
-                            <p className="mb-1 text-sm text-fg-muted">
+                            <p className="mb-1 break-words text-sm text-fg-muted">
                                 {post.slug} — {post.category?.name}
                             </p>
                             <p className="text-fg">{post.content.slice(0, 100)}...</p>
                         </div>
-                        <div className="flex flex-wrap gap-2 sm:flex-col">
+                        <div className="grid w-full gap-2 sm:w-auto sm:flex sm:flex-col">
                             <button
-                                className="btn-secondary"
+                                className="btn-secondary w-full sm:w-auto"
                                 onClick={() => router.push(`/admin/posts/${post._id}`)}
                             >
                                 Edit
                             </button>
                             <button
-                                className="btn-danger"
-                                onClick={() => handleDelete(post._id)}
+                                className="btn-danger w-full sm:w-auto"
+                                onClick={() => {
+                                    setError(null);
+                                    setNotice(null);
+                                    setPendingDeletePost(post);
+                                }}
                             >
                                 Delete
                             </button>
@@ -108,6 +126,20 @@ export default function PostsList({ categoryId }: Props) {
                     </div>
                 ))
             )}
+            {pendingDeletePost ? (
+                <PublicConfirmDialog
+                    title="Delete this post?"
+                    description={`This will remove “${pendingDeletePost.title}” from the archive. This action cannot be undone.`}
+                    confirmLabel="Delete post"
+                    isSubmitting={isDeleting}
+                    onConfirm={handleDelete}
+                    onClose={() => {
+                        if (!isDeleting) {
+                            setPendingDeletePost(null);
+                        }
+                    }}
+                />
+            ) : null}
         </div>
     )
 }

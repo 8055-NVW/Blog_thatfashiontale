@@ -119,7 +119,7 @@ export const POST = async (request: Request) => {
 
     } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify(`Failed to create post - ${getErrorMessage(error)}`),
+            JSON.stringify({ message: `Failed to create post - ${getErrorMessage(error)}` }),
             { status: 500 }
         )
     }

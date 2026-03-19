@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import ogs from "open-graph-scraper"
 
@@ -45,8 +46,14 @@ function getImageUrl(value: unknown): string | undefined {
 
 export const POST = async (request: Request) => {
     try {
+        const session = await auth();
+
+        if (!session?.user?.id || !session.user.is_superuser) {
+            return NextResponse.json({ message: "Admin authorization is required to scrape product metadata." }, { status: 403 });
+        }
+
         const { url } = await request.json() as MetadataRequestBody;
-        if (!url) return new NextResponse("Missing URL", { status: 400 });
+        if (!url) return NextResponse.json({ message: "Missing URL" }, { status: 400 });
 
         const { error, result } = await ogs({ url });
         if (error) throw new Error("Failed to scrape");
@@ -70,6 +77,6 @@ export const POST = async (request: Request) => {
 
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Unknown error";
-        return new NextResponse(`Error: ${message}`, { status: 500 });
+        return NextResponse.json({ message: `Error: ${message}` }, { status: 500 });
     }
 }

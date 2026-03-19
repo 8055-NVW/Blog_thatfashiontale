@@ -125,7 +125,7 @@ export default function HotspotModal({
                         </button>
                     </div>
 
-                    <div className="grid gap-2 text-sm leading-6 text-fg-muted md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                    <div className="grid gap-3 text-sm leading-6 text-fg-muted lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                         <p>
                             Click the image to place a marker. Each saved hotspot needs a primary item with a link.
                         </p>
@@ -192,10 +192,10 @@ export default function HotspotModal({
                 )}
 
                 <div className="flex flex-col-reverse gap-2 border-t border-border p-4 sm:flex-row sm:items-center sm:justify-between md:p-5">
-                    <button onClick={onClose} className="btn-secondary">
+                    <button onClick={onClose} className="btn-secondary w-full sm:w-auto">
                         Cancel
                     </button>
-                    <button onClick={() => onSave(saveState.hotspots)} className="btn-primary" disabled={saveState.invalidHotspotCount > 0}>
+                    <button onClick={() => onSave(saveState.hotspots)} className="btn-primary w-full sm:w-auto" disabled={saveState.invalidHotspotCount > 0}>
                         Save Hotspots
                     </button>
                 </div>

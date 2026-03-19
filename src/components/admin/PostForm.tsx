@@ -9,6 +9,9 @@ type PostFormProps = {
     categories: CategoryWithId[];
     submitLabel?: string;
     onSubmit: (form: PostFormType, categoryId: string) => Promise<void>;
+    isSubmitting?: boolean;
+    submitError?: string | null;
+    submitSuccess?: string | null;
 }
 
 export default function PostForm({
@@ -16,6 +19,9 @@ export default function PostForm({
     categories,
     submitLabel,
     onSubmit,
+    isSubmitting = false,
+    submitError,
+    submitSuccess,
 }: PostFormProps) {
     const [form, setForm] = useState<PostFormType>({
         title: "",
@@ -107,19 +113,19 @@ export default function PostForm({
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label htmlFor="admin-post-title" className="text-sm font-medium text-fg-muted">Title</label>
-                            <input id="admin-post-title" name="title" placeholder="Title" value={form.title} onChange={handleChange} className="input" required />
+                            <input id="admin-post-title" name="title" placeholder="Title" value={form.title} onChange={handleChange} className="input" required disabled={isSubmitting} />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="admin-post-slug" className="text-sm font-medium text-fg-muted">Slug</label>
-                            <input id="admin-post-slug" name="slug" placeholder="Slug" value={form.slug} onChange={handleChange} className="input" required />
+                            <input id="admin-post-slug" name="slug" placeholder="Slug" value={form.slug} onChange={handleChange} className="input" required disabled={isSubmitting} />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="admin-post-content" className="text-sm font-medium text-fg-muted">Content</label>
-                            <textarea id="admin-post-content" name="content" placeholder="Content" value={form.content} onChange={handleChange} className="textarea" rows={8} required />
+                            <textarea id="admin-post-content" name="content" placeholder="Content" value={form.content} onChange={handleChange} className="textarea" rows={8} required disabled={isSubmitting} />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="admin-post-image" className="text-sm font-medium text-fg-muted">Image URL</label>
-                            <input id="admin-post-image" name="image" placeholder="Image URL" value={form.image} onChange={handleChange} className="input" required />
+                            <input id="admin-post-image" name="image" placeholder="Image URL" value={form.image} onChange={handleChange} className="input" required disabled={isSubmitting} />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="admin-post-category" className="text-sm font-medium text-fg-muted">Category</label>
@@ -132,6 +138,7 @@ export default function PostForm({
                                 }}
                                 className="select"
                                 required
+                                disabled={isSubmitting}
                             >
                                 <option value="">Select a category</option>
                                 {categories.map((cat) => (
@@ -143,12 +150,15 @@ export default function PostForm({
                         </div>
                     </div>
 
+                    {submitError ? <p className="rounded-lg border border-danger/35 bg-danger/8 px-3 py-2 text-sm text-danger">{submitError}</p> : null}
+                    {!submitError && submitSuccess ? <p className="rounded-lg border border-success/35 bg-success/10 px-3 py-2 text-sm text-success">{submitSuccess}</p> : null}
+
                     <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-between">
-                        <button type="button" onClick={() => router.push("/admin")} className="btn-secondary">
+                        <button type="button" onClick={() => router.push("/admin")} className="btn-secondary" disabled={isSubmitting}>
                             Return to Dashboard
                         </button>
-                        <button type="submit" className="btn-primary">
-                            Save
+                        <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                            {isSubmitting ? "Saving..." : "Save"}
                         </button>
                     </div>
                 </div>
