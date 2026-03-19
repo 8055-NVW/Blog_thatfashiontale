@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { HotspotType } from "@/types/HotspotType";
+import { getTrapWrapTarget, HOTSPOT_DIALOG_FOCUSABLE_SELECTOR } from "@/lib/hotspotDialogFocus";
 
 type PostHotspotsProps = {
   image: string;
@@ -41,6 +42,8 @@ function getFallbackTitle(title?: string) {
 export default function PostHotspots({ image, title, hotspots = [] }: PostHotspotsProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const validHotspots = useMemo(
     () => hotspots.filter((hotspot) => hotspot?.primary?.link),
@@ -55,20 +58,65 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
     }
 
     const previousOverflow = document.body.style.overflow;
+    const dialogElement = dialogRef.current;
+
+    const getFocusableElements = () => {
+      if (!dialogElement) {
+        return [];
+      }
+
+      return Array.from(dialogElement.querySelectorAll<HTMLElement>(HOTSPOT_DIALOG_FOCUSABLE_SELECTOR));
+    };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setActiveIndex(null);
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusableElements = getFocusableElements();
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        dialogElement?.focus();
+        return;
+      }
+
+      if (!dialogElement?.contains(document.activeElement)) {
+        event.preventDefault();
+        const fallbackTarget = event.shiftKey
+          ? focusableElements[focusableElements.length - 1]
+          : focusableElements[0];
+        fallbackTarget?.focus();
+        return;
+      }
+
+      const wrapTarget = getTrapWrapTarget(focusableElements, document.activeElement as HTMLElement | null, event.shiftKey);
+
+      if (wrapTarget) {
+        event.preventDefault();
+        wrapTarget.focus();
       }
     };
 
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleKeyDown);
-    closeButtonRef.current?.focus();
+    document.addEventListener("keydown", handleKeyDown);
+
+    const focusTimer = window.requestAnimationFrame(() => {
+      const focusableElements = getFocusableElements();
+      const initialTarget = focusableElements[0] ?? dialogElement;
+      initialTarget?.focus();
+    });
 
     return () => {
+      window.cancelAnimationFrame(focusTimer);
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
+      triggerRef.current?.focus();
     };
   }, [activeIndex]);
 
@@ -86,7 +134,7 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
           />
 
           <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-3 md:p-4">
-            <div className="rounded-full border border-white/65 bg-[rgba(247,242,234,0.88)] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-fg shadow-[0_8px_18px_rgba(20,16,12,0.08)] backdrop-blur-sm md:text-[11px]">
+            <div className="rounded-full border border-border-strong/80 bg-surface/90 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-fg shadow-[0_8px_18px_rgba(20,16,12,0.12)] backdrop-blur-sm md:text-[11px]">
               Editorial notes
             </div>
           </div>
@@ -102,14 +150,17 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
                     key={`${hotspot.primary?.link ?? "hotspot"}-${index}`}
                     type="button"
                     aria-label={`Open hotspot ${index + 1}${hotspot.primary?.title ? ` for ${hotspot.primary.title}` : ""}`}
-                    className="group absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(20,16,12,0.14)]"
+                    className="group absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
                     style={{ left: `${left}%`, top: `${top}%` }}
-                    onClick={() => setActiveIndex(index)}
+                    onClick={(event) => {
+                      triggerRef.current = event.currentTarget;
+                      setActiveIndex(index);
+                    }}
                   >
-                    <span className="absolute inset-0 rounded-full bg-white/6 opacity-0 transition duration-200 group-hover:opacity-100 group-focus-visible:opacity-100" />
-                    <span className="absolute h-3.5 w-3.5 rounded-full border border-white/80 bg-[rgba(247,242,234,0.96)] shadow-[0_8px_18px_rgba(20,16,12,0.14)] transition duration-200 group-hover:scale-110 group-focus-visible:scale-110 md:h-4 md:w-4" />
-                    <span className="absolute h-1.5 w-1.5 rounded-full bg-fg/70 md:h-1.5 md:w-1.5" />
-                    <span className="absolute left-full ml-2 hidden min-w-7 rounded-full border border-white/70 bg-[rgba(247,242,234,0.96)] px-2 py-1 text-[10px] font-medium leading-none text-fg shadow-[0_10px_24px_rgba(20,16,12,0.12)] transition group-hover:block group-focus-visible:block md:block md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
+                    <span className="absolute inset-0 rounded-full bg-surface/15 opacity-0 transition duration-200 group-hover:opacity-100 group-focus-visible:opacity-100" />
+                    <span className="absolute h-3.5 w-3.5 rounded-full border border-border-strong bg-surface shadow-[0_8px_18px_rgba(20,16,12,0.16)] transition duration-200 group-hover:scale-110 group-focus-visible:scale-110 md:h-4 md:w-4" />
+                    <span className="absolute h-1.5 w-1.5 rounded-full bg-accent md:h-1.5 md:w-1.5" />
+                    <span className="absolute left-full ml-2 hidden min-w-7 rounded-full border border-border-strong bg-surface px-2 py-1 text-[10px] font-medium leading-none text-fg shadow-[0_10px_24px_rgba(20,16,12,0.16)] transition group-hover:block group-focus-visible:block md:block md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
                       {index + 1}
                     </span>
                   </button>
@@ -134,9 +185,11 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
           onClick={() => setActiveIndex(null)}
         >
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="hotspot-dialog-title"
+            tabIndex={-1}
             className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[1.5rem] border border-border bg-surface p-5 shadow-[var(--shadow-lift)] overscroll-contain md:max-h-[min(82vh,48rem)] md:p-7"
             onClick={(event) => event.stopPropagation()}
           >
