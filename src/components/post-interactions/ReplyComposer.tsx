@@ -53,10 +53,11 @@ export default function ReplyComposer({ commentId, onSuccess }: ReplyComposerPro
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-lg border border-border bg-surface px-4 py-4 shadow-[var(--shadow-soft)]">
+    <form onSubmit={handleSubmit} className="discussion-composer mt-4 space-y-4 px-4 py-4">
       <div className="space-y-2">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-fg-subtle">Reply</p>
         <label htmlFor={contentFieldId} className="block text-sm font-medium text-fg-muted">
-          Reply
+          Your reply
         </label>
 
         <textarea
@@ -70,13 +71,13 @@ export default function ReplyComposer({ commentId, onSuccess }: ReplyComposerPro
           maxLength={1000}
           placeholder="Write a reply..."
           disabled={isSubmitting}
-          className="w-full rounded-lg border border-border bg-subtle px-4 py-3 text-sm text-fg outline-none transition placeholder:text-fg-subtle focus:border-border-strong disabled:cursor-not-allowed disabled:text-fg-subtle md:text-base"
+          className="discussion-composer-field min-h-28 resize-y"
         />
       </div>
 
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-5 text-sm text-danger">{error}</div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
           <button
             type="button"
             onClick={onSuccess}
@@ -88,7 +89,7 @@ export default function ReplyComposer({ commentId, onSuccess }: ReplyComposerPro
           <button
             type="submit"
             disabled={isSubmitting || content.trim().length === 0}
-            className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-fg-inverse transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-surface-strong disabled:text-fg-subtle"
+            className="discussion-composer-submit"
           >
             {isSubmitting ? "Posting..." : "Reply"}
           </button>

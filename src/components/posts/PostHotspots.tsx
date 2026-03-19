@@ -134,7 +134,7 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
           />
 
           <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-3 md:p-4">
-            <div className="rounded-full border border-border-strong/80 bg-surface/90 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-fg shadow-[0_8px_18px_rgba(20,16,12,0.12)] backdrop-blur-sm md:text-[11px]">
+            <div className="meta-label rounded-full border border-border-strong/80 bg-surface/90 px-3 py-1.5 text-fg shadow-[var(--shadow-soft)] backdrop-blur-sm">
               Editorial notes
             </div>
           </div>
@@ -171,16 +171,16 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
         </div>
 
         {validHotspots.length > 0 ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-subtle/65 px-4 py-3 text-[11px] tracking-[0.16em] text-fg-subtle uppercase md:px-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-subtle/65 px-4 py-3 md:px-5">
             <span>Open the image markers for sourced item details.</span>
-            <span className="text-[10px] tracking-[0.14em] md:text-[11px]">{validHotspots.length} note{validHotspots.length === 1 ? "" : "s"}</span>
+            <span className="meta-count">{validHotspots.length} note{validHotspots.length === 1 ? "" : "s"}</span>
           </div>
         ) : null}
       </div>
 
       {activeHotspot?.primary ? (
         <div
-          className="fixed inset-0 z-50 flex items-end bg-[rgba(20,16,12,0.42)] p-2 backdrop-blur-[3px] md:items-center md:justify-center md:p-4"
+          className="public-dialog-backdrop fixed inset-0 z-50 flex items-end p-2 md:items-center md:justify-center md:p-4"
           role="presentation"
           onClick={() => setActiveIndex(null)}
         >
@@ -190,12 +190,12 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
             aria-modal="true"
             aria-labelledby="hotspot-dialog-title"
             tabIndex={-1}
-            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[1.5rem] border border-border bg-surface p-5 shadow-[var(--shadow-lift)] overscroll-contain md:max-h-[min(82vh,48rem)] md:p-7"
+            className="public-dialog-surface max-h-[85vh] w-full max-w-2xl overflow-y-auto p-5 overscroll-contain md:max-h-[min(82vh,48rem)] md:p-7"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2.5 pr-2">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-fg-subtle">
+                <p className="meta-label">
                   Image hotspot
                 </p>
                 <h2 id="hotspot-dialog-title" className="text-[1.7rem] font-semibold leading-tight tracking-[-0.035em] text-fg md:text-[2rem]">
@@ -219,7 +219,7 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
 
             <div className="mt-6 grid gap-5 md:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] md:gap-6 md:items-start">
               {activeHotspot.primary.image ? (
-                <div className="overflow-hidden rounded-[1.2rem] border border-border bg-subtle">
+                <div className="public-dialog-card overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element -- Dynamic scraped image URLs are not guaranteed to be supported by next/image. */}
                   <img
                     src={activeHotspot.primary.image}
@@ -228,28 +228,28 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
                   />
                 </div>
               ) : (
-                <div className="flex aspect-[4/5] items-end rounded-[1.2rem] border border-dashed border-border-strong bg-subtle p-4 text-sm leading-6 text-fg-muted">
+                <div className="public-dialog-card flex aspect-[4/5] items-end border-dashed border-border-strong p-4 text-sm leading-6 text-fg-muted">
                   Preview image unavailable. The original source still includes the full item context.
                 </div>
               )}
 
               <div className="space-y-4 md:space-y-5">
                 {activeHotspot.primary.price?.trim() ? (
-                  <div className="rounded-[1.1rem] border border-border bg-subtle px-4 py-3.5">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Observed price</p>
+                  <div className="public-dialog-card px-4 py-3.5">
+                    <p className="meta-label">Observed price</p>
                     <p className="mt-2 text-xl font-semibold tracking-[-0.03em] text-fg">
                       {activeHotspot.primary.price.trim()}
                     </p>
                   </div>
                 ) : null}
 
-                <div className="rounded-[1.1rem] border border-border bg-subtle px-4 py-3.5">
+                <div className="public-dialog-card px-4 py-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Source</p>
+                      <p className="meta-label">Source</p>
                       <p className="mt-2 text-sm font-medium text-fg">{getSourceLabel(activeHotspot.primary.link)}</p>
                     </div>
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Primary item</p>
+                    <p className="meta-label">Primary item</p>
                   </div>
                 </div>
 

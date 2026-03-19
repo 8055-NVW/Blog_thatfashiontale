@@ -120,6 +120,24 @@ body {
   outline-offset: 2px;
 }
 
+.meta-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.meta-count {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
 .shell-container,
 .content-container,
 .content-wide-container,
@@ -180,6 +198,81 @@ body {
 .quiet-action:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.discussion-composer {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-soft);
+}
+
+.discussion-composer-field {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-1);
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.discussion-composer-field::placeholder {
+  color: var(--text-tertiary);
+}
+
+.discussion-composer-field:focus {
+  border-color: var(--border-strong);
+}
+
+.discussion-composer-field:disabled {
+  cursor: not-allowed;
+  color: var(--text-tertiary);
+}
+
+.discussion-composer-submit {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--accent-primary);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-inverse);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.discussion-composer-submit:hover {
+  background: var(--accent-hover);
+}
+
+.discussion-composer-submit:disabled {
+  cursor: not-allowed;
+  background: var(--surface-3);
+  color: var(--text-tertiary);
+}
+
+.public-dialog-backdrop {
+  background: color-mix(in srgb, var(--bg-canvas) 28%, rgba(20, 16, 12, 0.78));
+  backdrop-filter: blur(3px);
+}
+
+.public-dialog-surface {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-lift);
+}
+
+.public-dialog-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-2);
 }
 
 .hero {

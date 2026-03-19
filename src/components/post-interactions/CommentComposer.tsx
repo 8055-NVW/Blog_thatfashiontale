@@ -55,7 +55,7 @@ export default function CommentComposer({ postId }: CommentComposerProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-border bg-subtle px-5 py-5 shadow-[var(--shadow-soft)]">
+    <form onSubmit={handleSubmit} className="discussion-composer space-y-4 px-4 py-4 md:space-y-5 md:px-5 md:py-5">
       <div className="space-y-2">
         <h3 className="text-base font-semibold text-fg">Add a comment</h3>
         <p className="text-sm leading-6 text-fg-muted">Share a thoughtful response to the post.</p>
@@ -78,11 +78,11 @@ export default function CommentComposer({ postId }: CommentComposerProps) {
           maxLength={1000}
           placeholder="Write your comment here..."
           disabled={isSubmitting}
-          className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-base text-fg outline-none transition placeholder:text-fg-subtle focus:border-border-strong disabled:cursor-not-allowed disabled:text-fg-subtle"
+          className="discussion-composer-field min-h-32 resize-y"
         />
       </div>
 
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-h-5 text-sm">
           {error ? <p className="text-danger">{error}</p> : null}
           {!error && success ? <p className="text-success">{success}</p> : null}
@@ -91,7 +91,7 @@ export default function CommentComposer({ postId }: CommentComposerProps) {
         <button
           type="submit"
           disabled={isSubmitting || content.trim().length === 0}
-          className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-fg-inverse transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-surface-strong disabled:text-fg-subtle"
+          className="discussion-composer-submit w-full sm:w-auto"
         >
           {isSubmitting ? "Posting..." : "Post comment"}
         </button>

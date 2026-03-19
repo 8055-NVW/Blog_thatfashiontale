@@ -1,8 +1,9 @@
 "use client";
 
 import ActionFeedback from "./ActionFeedback";
+import PublicConfirmDialog from "./PublicConfirmDialog";
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 type DeleteOwnButtonProps = {
   commentId: string;
@@ -14,15 +15,17 @@ export default function DeleteOwnButton({ commentId, itemLabel }: DeleteOwnButto
   const messageId = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isConfirmOpen) {
+      triggerRef.current?.focus();
+    }
+  }, [isConfirmOpen]);
 
   async function handleDelete() {
     if (isSubmitting) {
-      return;
-    }
-
-    const confirmed = window.confirm(`Delete this ${itemLabel}?`);
-
-    if (!confirmed) {
       return;
     }
 
@@ -41,6 +44,7 @@ export default function DeleteOwnButton({ commentId, itemLabel }: DeleteOwnButto
         return;
       }
 
+      setIsConfirmOpen(false);
       router.refresh();
     } catch {
       setError(`Could not delete ${itemLabel}.`);
@@ -52,15 +56,35 @@ export default function DeleteOwnButton({ commentId, itemLabel }: DeleteOwnButto
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         aria-describedby={error ? messageId : undefined}
-        onClick={handleDelete}
+        onClick={() => {
+          if (!isSubmitting) {
+            setError(null);
+            setIsConfirmOpen(true);
+          }
+        }}
         disabled={isSubmitting}
         className="quiet-action hover:text-danger disabled:text-fg-subtle"
       >
         {isSubmitting ? "Deleting..." : "Delete"}
       </button>
       <ActionFeedback messageId={messageId} error={error} />
+      {isConfirmOpen ? (
+        <PublicConfirmDialog
+          title={`Delete this ${itemLabel}?`}
+          description={`This will remove the ${itemLabel} from the discussion. This action cannot be undone.`}
+          confirmLabel={`Delete ${itemLabel}`}
+          isSubmitting={isSubmitting}
+          onConfirm={handleDelete}
+          onClose={() => {
+            if (!isSubmitting) {
+              setIsConfirmOpen(false);
+            }
+          }}
+        />
+      ) : null}
     </>
   );
 }

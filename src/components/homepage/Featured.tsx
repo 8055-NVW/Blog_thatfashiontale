@@ -47,7 +47,7 @@ export default function Featured({ posts }: FeaturedProps) {
 
         <div className="grid gap-8 px-6 py-6 md:grid-cols-[minmax(0,1.15fr)_minmax(14rem,0.85fr)] md:px-8 md:py-8">
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.22em] text-fg-subtle">
+            <div className="meta-label flex flex-wrap items-center gap-x-4 gap-y-2">
               <span>{post.category?.name ?? "Post"}</span>
               {publishedDate ? <span>{publishedDate}</span> : null}
             </div>
@@ -61,7 +61,7 @@ export default function Featured({ posts }: FeaturedProps) {
 
           <div className="flex flex-col justify-between gap-5 rounded-lg border border-border bg-subtle p-5">
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-[0.24em] text-fg-subtle">Featured reading</p>
+              <p className="meta-label">Featured reading</p>
               <p className="text-sm leading-6 text-fg-muted">
                 A slower entry point for readers who want one complete story before exploring the full archive.
               </p>

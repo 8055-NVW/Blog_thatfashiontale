@@ -93,13 +93,13 @@ export default async function AccountPage() {
       <section className="rounded-xl border border-border bg-surface px-6 py-7 shadow-[var(--shadow-soft)] md:px-8 md:py-8">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.24em] text-fg-subtle">Saved reading</p>
+            <p className="meta-label">Saved reading</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-fg">Saved posts</h2>
             <p className="mt-2 text-sm leading-6 text-fg-muted md:text-base">
               Posts you save appear here in a calm, easy-to-return reading list.
             </p>
           </div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-fg-subtle">{savedPosts.length} saved</p>
+          <p className="meta-count">{savedPosts.length} saved</p>
         </div>
 
         {savedPosts.length === 0 ? (
