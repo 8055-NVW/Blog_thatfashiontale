@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { HotspotType } from "@/types/HotspotType";
 
@@ -34,8 +34,13 @@ function getHotspotDescription(title?: string) {
   return "This hotspot includes a source link, but the scraped title was incomplete. Open the original source for the full item details.";
 }
 
+function getFallbackTitle(title?: string) {
+  return title?.trim() || "Sourced item";
+}
+
 export default function PostHotspots({ image, title, hotspots = [] }: PostHotspotsProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const validHotspots = useMemo(
     () => hotspots.filter((hotspot) => hotspot?.primary?.link),
@@ -59,6 +64,7 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
 
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
+    closeButtonRef.current?.focus();
 
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -68,7 +74,7 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)]">
+      <div className="overflow-hidden rounded-[1.25rem] border border-border bg-surface shadow-[var(--shadow-soft)]">
         <div className="relative">
           <Image
             src={image}
@@ -78,6 +84,12 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
             priority
             className="aspect-[16/10] w-full object-cover"
           />
+
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-3 md:p-4">
+            <div className="rounded-full border border-white/65 bg-[rgba(247,242,234,0.88)] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-fg shadow-[0_8px_18px_rgba(20,16,12,0.08)] backdrop-blur-sm md:text-[11px]">
+              Editorial notes
+            </div>
+          </div>
 
           {validHotspots.length > 0 ? (
             <div className="absolute inset-0">
@@ -90,12 +102,16 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
                     key={`${hotspot.primary?.link ?? "hotspot"}-${index}`}
                     type="button"
                     aria-label={`Open hotspot ${index + 1}${hotspot.primary?.title ? ` for ${hotspot.primary.title}` : ""}`}
-                    className="group absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/85 bg-[rgba(245,240,232,0.92)] text-xs font-semibold text-fg shadow-[0_12px_26px_rgba(20,16,12,0.16)] transition duration-200 hover:scale-105 hover:border-white hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(20,16,12,0.14)]"
+                    className="group absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(20,16,12,0.14)]"
                     style={{ left: `${left}%`, top: `${top}%` }}
                     onClick={() => setActiveIndex(index)}
                   >
-                    <span className="absolute inset-0 scale-[1.45] rounded-full border border-white/35 bg-white/10 opacity-90 transition group-hover:scale-[1.6] group-hover:opacity-100" />
-                    <span className="relative">{index + 1}</span>
+                    <span className="absolute inset-0 rounded-full bg-white/6 opacity-0 transition duration-200 group-hover:opacity-100 group-focus-visible:opacity-100" />
+                    <span className="absolute h-3.5 w-3.5 rounded-full border border-white/80 bg-[rgba(247,242,234,0.96)] shadow-[0_8px_18px_rgba(20,16,12,0.14)] transition duration-200 group-hover:scale-110 group-focus-visible:scale-110 md:h-4 md:w-4" />
+                    <span className="absolute h-1.5 w-1.5 rounded-full bg-fg/70 md:h-1.5 md:w-1.5" />
+                    <span className="absolute left-full ml-2 hidden min-w-7 rounded-full border border-white/70 bg-[rgba(247,242,234,0.96)] px-2 py-1 text-[10px] font-medium leading-none text-fg shadow-[0_10px_24px_rgba(20,16,12,0.12)] transition group-hover:block group-focus-visible:block md:block md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
+                      {index + 1}
+                    </span>
                   </button>
                 );
               })}
@@ -104,15 +120,16 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
         </div>
 
         {validHotspots.length > 0 ? (
-          <div className="border-t border-border bg-subtle/65 px-4 py-3 text-xs tracking-[0.16em] text-fg-subtle uppercase md:px-5">
-            Open the image markers for sourced item details.
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-subtle/65 px-4 py-3 text-[11px] tracking-[0.16em] text-fg-subtle uppercase md:px-5">
+            <span>Open the image markers for sourced item details.</span>
+            <span className="text-[10px] tracking-[0.14em] md:text-[11px]">{validHotspots.length} note{validHotspots.length === 1 ? "" : "s"}</span>
           </div>
         ) : null}
       </div>
 
       {activeHotspot?.primary ? (
         <div
-          className="fixed inset-0 z-50 flex items-end bg-[rgba(20,16,12,0.42)] p-4 backdrop-blur-[2px] md:items-center md:justify-center"
+          className="fixed inset-0 z-50 flex items-end bg-[rgba(20,16,12,0.42)] p-2 backdrop-blur-[3px] md:items-center md:justify-center md:p-4"
           role="presentation"
           onClick={() => setActiveIndex(null)}
         >
@@ -120,71 +137,76 @@ export default function PostHotspots({ image, title, hotspots = [] }: PostHotspo
             role="dialog"
             aria-modal="true"
             aria-labelledby="hotspot-dialog-title"
-            className="w-full max-w-xl rounded-2xl border border-border bg-surface p-5 shadow-[var(--shadow-lift)] md:p-6"
+            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[1.5rem] border border-border bg-surface p-5 shadow-[var(--shadow-lift)] overscroll-contain md:max-h-[min(82vh,48rem)] md:p-7"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2">
+              <div className="space-y-2.5 pr-2">
                 <p className="text-[11px] uppercase tracking-[0.22em] text-fg-subtle">
                   Image hotspot
                 </p>
-                <h2 id="hotspot-dialog-title" className="text-2xl font-semibold tracking-[-0.03em] text-fg">
-                  {activeHotspot.primary.title?.trim() || "Linked item"}
+                <h2 id="hotspot-dialog-title" className="text-[1.7rem] font-semibold leading-tight tracking-[-0.035em] text-fg md:text-[2rem]">
+                  {getFallbackTitle(activeHotspot.primary.title)}
                 </h2>
+                <p className="max-w-xl text-sm leading-7 text-fg-muted md:text-[0.98rem]">
+                  {getHotspotDescription(activeHotspot.primary.title)}
+                </p>
               </div>
 
               <button
+                ref={closeButtonRef}
                 type="button"
                 aria-label="Close hotspot details"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-subtle text-lg text-fg-muted transition hover:border-border-strong hover:text-fg"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-subtle text-lg text-fg-muted transition hover:border-border-strong hover:text-fg"
                 onClick={() => setActiveIndex(null)}
               >
                 ×
               </button>
             </div>
 
-            <div className="mt-5 grid gap-5 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)] md:items-start">
+            <div className="mt-6 grid gap-5 md:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] md:gap-6 md:items-start">
               {activeHotspot.primary.image ? (
-                <div className="overflow-hidden rounded-xl border border-border bg-subtle">
+                <div className="overflow-hidden rounded-[1.2rem] border border-border bg-subtle">
                   {/* eslint-disable-next-line @next/next/no-img-element -- Dynamic scraped image URLs are not guaranteed to be supported by next/image. */}
                   <img
                     src={activeHotspot.primary.image}
-                    alt={activeHotspot.primary.title?.trim() || "Linked item preview"}
-                    className="aspect-square h-full w-full object-cover"
+                    alt={getFallbackTitle(activeHotspot.primary.title)}
+                    className="aspect-[4/5] h-full w-full object-cover"
                   />
                 </div>
               ) : (
-                <div className="flex aspect-square items-end rounded-xl border border-dashed border-border-strong bg-subtle p-4 text-sm leading-6 text-fg-muted">
-                  Preview image unavailable. Open the source for the full product details.
+                <div className="flex aspect-[4/5] items-end rounded-[1.2rem] border border-dashed border-border-strong bg-subtle p-4 text-sm leading-6 text-fg-muted">
+                  Preview image unavailable. The original source still includes the full item context.
                 </div>
               )}
 
-              <div className="space-y-4">
-                <p className="text-sm leading-7 text-fg-muted">
-                  {getHotspotDescription(activeHotspot.primary.title)}
-                </p>
-
+              <div className="space-y-4 md:space-y-5">
                 {activeHotspot.primary.price?.trim() ? (
-                  <div className="rounded-xl border border-border bg-subtle px-4 py-3">
+                  <div className="rounded-[1.1rem] border border-border bg-subtle px-4 py-3.5">
                     <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Observed price</p>
-                    <p className="mt-2 text-lg font-semibold tracking-[-0.02em] text-fg">
+                    <p className="mt-2 text-xl font-semibold tracking-[-0.03em] text-fg">
                       {activeHotspot.primary.price.trim()}
                     </p>
                   </div>
                 ) : null}
 
-                <div className="rounded-xl border border-border bg-subtle px-4 py-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Source</p>
-                  <p className="mt-2 text-sm font-medium text-fg">{getSourceLabel(activeHotspot.primary.link)}</p>
+                <div className="rounded-[1.1rem] border border-border bg-subtle px-4 py-3.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Source</p>
+                      <p className="mt-2 text-sm font-medium text-fg">{getSourceLabel(activeHotspot.primary.link)}</p>
+                    </div>
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-fg-subtle">Primary item</p>
+                  </div>
                 </div>
 
                 <a
                   href={activeHotspot.primary.link}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="inline-flex items-center rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-fg transition hover:border-border-strong hover:bg-accent-soft"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-medium text-fg transition hover:border-border-strong hover:bg-accent-soft"
                 >
-                  View source
+                  Open original source
                 </a>
               </div>
             </div>
