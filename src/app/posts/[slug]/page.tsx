@@ -178,7 +178,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
         .filter(Boolean);
 
     return (
-        <article className="content-container space-y-10 px-4 py-10 md:space-y-12 md:py-14">
+        <article className="content-container space-y-10 py-10 md:space-y-12 md:py-14">
             <header className="space-y-6">
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.24em] text-fg-subtle">

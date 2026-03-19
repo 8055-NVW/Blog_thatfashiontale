@@ -19,7 +19,7 @@ export default async function Home({ searchParams }: SignInPageProps) {
   }
 
   return (
-    <div className="form-container flex min-h-[70vh] items-center px-4 py-12 md:py-16">
+    <div className="form-container flex min-h-[70vh] items-center py-12 md:py-16">
       <section className="w-full rounded-xl border border-border bg-surface px-7 py-8 shadow-[var(--shadow-soft)] md:px-8 md:py-9">
         <p className="text-[11px] uppercase tracking-[0.28em] text-fg-subtle">Sign in</p>
         <div className="mt-4 space-y-4">

@@ -60,7 +60,7 @@ export default async function AccountPage() {
   const savedPosts = await getSavedPosts(session.user.id);
 
   return (
-    <div className="content-wide-container space-y-8 px-4 py-10 md:space-y-10 md:py-14">
+    <div className="content-wide-container space-y-8 py-10 md:space-y-10 md:py-14">
       <section className="rounded-xl border border-border bg-surface px-6 py-7 shadow-[var(--shadow-soft)] md:px-8 md:py-8">
         <p className="text-[11px] uppercase tracking-[0.28em] text-fg-subtle">Account</p>
         <div className="mt-4 flex items-center gap-4 md:gap-5">
