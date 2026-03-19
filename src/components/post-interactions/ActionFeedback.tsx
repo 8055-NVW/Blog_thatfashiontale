@@ -22,14 +22,14 @@ export default function ActionFeedback({
   }
 
   if (signInHref && signInPrompt) {
-    return (
-      <span id={messageId} className="text-fg-subtle">
-        <Link
-          href={signInHref}
-          className="underline decoration-border-strong underline-offset-4 transition hover:text-fg hover:decoration-fg-muted"
-        >
-          Sign in
-        </Link>{" "}
+      return (
+        <span id={messageId} className="text-fg-subtle">
+          <Link
+            href={signInHref}
+            className="font-medium text-fg underline decoration-border-strong underline-offset-4 transition hover:decoration-fg-muted"
+          >
+            Sign in
+          </Link>{" "}
         {signInPrompt}
       </span>
     );

@@ -65,14 +65,14 @@ export default function CommentItem({
           <button
             type="button"
             onClick={onToggleReply}
-            className="font-medium text-fg-muted transition hover:text-fg"
+            className="quiet-action"
           >
             {isReplying ? "Cancel reply" : "Reply"}
           </button>
         ) : (
           <Link
             href={signInHref}
-            className="font-medium text-fg-muted underline decoration-border-strong underline-offset-4 transition hover:text-fg hover:decoration-fg-muted"
+            className="quiet-action"
           >
             Sign in to reply
           </Link>

@@ -71,7 +71,7 @@ export default function CommentLikeButton({
         aria-describedby={helperMessage ? messageId : undefined}
         onClick={handleToggleLike}
         disabled={isSubmitting}
-        className="font-medium text-fg-muted transition hover:text-fg disabled:cursor-not-allowed disabled:text-fg-subtle"
+        className="quiet-action disabled:text-fg-subtle"
       >
         {isSubmitting ? "Updating..." : hasLiked ? "Liked" : "Like"}
       </button>

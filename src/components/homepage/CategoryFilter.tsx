@@ -28,7 +28,7 @@ export default function CategoryFilter({
         {selectedCategoryId !== null && (
           <button
             onClick={() => onCategorySelect(null)}
-            className="shrink-0 text-sm font-medium text-fg-muted underline decoration-border-strong underline-offset-4 transition hover:text-fg"
+            className="quiet-action shrink-0"
           >
             Clear filter
           </button>

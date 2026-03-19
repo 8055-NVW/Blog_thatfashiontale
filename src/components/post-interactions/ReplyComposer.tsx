@@ -81,7 +81,7 @@ export default function ReplyComposer({ commentId, onSuccess }: ReplyComposerPro
             type="button"
             onClick={onSuccess}
             disabled={isSubmitting}
-            className="rounded-full px-3 py-2 text-sm font-medium text-fg-muted transition hover:text-fg disabled:cursor-not-allowed disabled:text-fg-subtle"
+            className="quiet-action disabled:text-fg-subtle"
           >
             Cancel
           </button>

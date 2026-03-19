@@ -149,6 +149,39 @@ body {
   --container-max: var(--form-max);
 }
 
+.quiet-action {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.quiet-action:hover {
+  background: color-mix(in srgb, var(--accent-soft) 72%, transparent);
+  color: var(--text-primary);
+}
+
+.quiet-action:disabled {
+  cursor: not-allowed;
+  color: var(--text-tertiary);
+}
+
+.quiet-action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
 .hero {
   background-image: url(https://placehold.co/600x400);
   min-height: 400px;

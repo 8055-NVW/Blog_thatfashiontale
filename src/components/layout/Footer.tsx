@@ -20,11 +20,11 @@ export default function Footer() {
 
                 <div className="space-y-3 text-sm text-fg-muted md:text-right">
                     <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 md:justify-end">
-                        <Link href="/" className="transition hover:text-fg">Home</Link>
-                        <Link href="/#browse-posts" className="transition hover:text-fg">Archive</Link>
-                        <Link href="/#featured-post" className="transition hover:text-fg">Featured</Link>
+                        <Link href="/" className="quiet-action">Home</Link>
+                        <Link href="/#browse-posts" className="quiet-action">Archive</Link>
+                        <Link href="/#featured-post" className="quiet-action">Featured</Link>
                         {status === "loading" ? null : (
-                            <Link href={authHref} className="transition hover:text-fg">{authLabel}</Link>
+                            <Link href={authHref} className="quiet-action">{authLabel}</Link>
                         )}
                     </nav>
                     <p className="text-xs uppercase tracking-[0.18em] text-fg-subtle">© 2025 That Fashion Tale</p>

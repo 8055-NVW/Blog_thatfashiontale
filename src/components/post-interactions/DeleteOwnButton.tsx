@@ -56,7 +56,7 @@ export default function DeleteOwnButton({ commentId, itemLabel }: DeleteOwnButto
         aria-describedby={error ? messageId : undefined}
         onClick={handleDelete}
         disabled={isSubmitting}
-        className="font-medium text-fg-subtle transition hover:text-danger disabled:cursor-not-allowed disabled:text-fg-subtle"
+        className="quiet-action hover:text-danger disabled:text-fg-subtle"
       >
         {isSubmitting ? "Deleting..." : "Delete"}
       </button>
