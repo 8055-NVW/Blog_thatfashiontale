@@ -275,6 +275,144 @@ body {
   background: var(--surface-2);
 }
 
+.admin-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-subcard {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-2);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-1);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus-ring) 18%, transparent);
+}
+
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  cursor: not-allowed;
+  background: var(--surface-2);
+  color: var(--text-tertiary);
+}
+
+.textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-sm {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 0.5rem 0.95rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-danger:focus-visible,
+.btn-sm:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.btn,
+.btn-primary {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
+.btn:hover,
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-secondary,
+.btn-sm {
+  border-color: var(--border-soft);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover,
+.btn-sm:hover {
+  border-color: var(--border-strong);
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  border-color: color-mix(in srgb, var(--danger) 30%, var(--border-soft));
+  background: var(--surface-1);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: var(--text-inverse);
+}
+
+.btn:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled,
+.btn-sm:disabled {
+  cursor: not-allowed;
+  border-color: var(--border-soft);
+  background: var(--surface-3);
+  color: var(--text-tertiary);
+}
+
+.btn-sm {
+  min-height: 2.125rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
 .hero {
   background-image: url(https://placehold.co/600x400);
   min-height: 400px;

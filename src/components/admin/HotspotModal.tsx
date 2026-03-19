@@ -46,9 +46,10 @@ export default function HotspotModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 p-8 overflow-auto">
-            <div className="relative max-w-5xl mx-auto bg-white rounded shadow-lg">
+        <div className="fixed inset-0 z-50 overflow-auto bg-black/70 p-3 backdrop-blur-[2px] md:p-6">
+            <div className="admin-card relative mx-auto max-w-5xl overflow-hidden">
                 <div className="relative" ref={containerRef} onClick={handleAddHotspot}>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- Admin authoring canvas needs arbitrary remote image URLs before persistence. */}
                     <img
                         src={imageUrl}
                         alt="Hotspot Base"
@@ -58,10 +59,10 @@ export default function HotspotModal({
                         <div
                             key={i}
                             title={`Hotspot #${i + 1}`}
-                            className={`absolute w-6 h-6 rounded-full cursor-pointer transition 
+                            className={`absolute h-6 w-6 cursor-pointer rounded-full transition 
                                 ${activeIndex === i
-                                    ? "bg-white border-6 border-blue-500 shadow-blue-500"
-                                    : "bg-white border-2 border-black"}`}
+                                    ? "border-4 border-accent bg-surface shadow-[var(--shadow-soft)]"
+                                    : "border-2 border-fg bg-surface"}`}
                             style={{
                                 left: `${h.x * 100}%`,
                                 top: `${h.y * 100}%`,
@@ -76,7 +77,7 @@ export default function HotspotModal({
                 </div>
 
                 {activeIndex !== null && (
-                    <div className="p-4 border-t bg-gray-50">
+                    <div className="border-t border-border bg-subtle p-4 md:p-5">
                         <HotspotEditor
                             hotspot={hotspots[activeIndex]}
                             onChange={(updated) => updateHotspot(activeIndex, updated)}
@@ -85,7 +86,7 @@ export default function HotspotModal({
                     </div>
                 )}
 
-                <div className="flex justify-between items-center p-4 border-t">
+                <div className="flex flex-col-reverse gap-2 border-t border-border p-4 sm:flex-row sm:items-center sm:justify-between md:p-5">
                     <button onClick={onClose} className="btn-secondary">
                         Cancel
                     </button>

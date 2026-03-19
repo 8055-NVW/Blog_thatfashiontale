@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PostWithCategory } from "@/types/PostViewType";
 import { deletePost, getPosts } from "@/lib/api/posts";
@@ -9,26 +9,32 @@ type Props = {
     categoryId?: string;
 };
 
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
 export default function PostsList({ categoryId }: Props) {
     const [posts, setPosts] = useState<PostWithCategory[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null)
+    const [error, setError] = useState<string | null>(null)
     const router = useRouter();
 
-    const fetchPosts = async () => {
+    const fetchPosts = useCallback(async () => {
         try {
             const data = await getPosts({ categoryId })
             setPosts(data.posts || []);
+            setError(null);
         } catch (err) {
             console.error("Failed to fetch posts", err);
+            setError(getErrorMessage(err));
         } finally {
             setLoading(false)
         }
-    };
+    }, [categoryId]);
 
     useEffect(() => {
         fetchPosts();
-    }, [categoryId]);
+    }, [fetchPosts]);
 
     const handleDelete = async (postId: string) => {
         if (!confirm("Delete this post?")) return;
@@ -40,8 +46,8 @@ export default function PostsList({ categoryId }: Props) {
             } else {
                 alert("Failed to delete post.");
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            setError(getErrorMessage(err));
             console.error("Delete error:", err);
         }
     };
@@ -57,34 +63,35 @@ export default function PostsList({ categoryId }: Props) {
     return (
         <div className="space-y-4">
             <button
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                className="btn-primary"
                 onClick={() => router.push("/admin/posts/create")}
             >
                 + Add Post
             </button>
             {posts.length === 0 ? (
-                <p>No posts found{categoryId ? " for this category" : ""}.</p>
+                <div className="admin-card px-5 py-6 text-sm text-fg-muted">No posts found{categoryId ? " for this category" : ""}.</div>
             ) : (
                 posts.map(post => (
                     <div
                         key={post._id}
-                        className="flex items-start gap-4 border p-4 rounded-md"
+                        className="admin-card flex flex-col gap-4 p-4 sm:flex-row sm:items-start"
                     >
                         {post.image && (
+                            // eslint-disable-next-line @next/next/no-img-element -- Admin list previews arbitrary remote post images.
                             <img
                                 src={post.image}
                                 alt={post.title}
-                                className="w-24 h-24 object-cover rounded"
+                                className="h-24 w-full rounded-lg border border-border object-cover sm:w-24"
                             />
                         )}
                         <div className="flex-1">
-                            <h3 className="text-lg font-semibold">{post.title}</h3>
-                            <p className="text-sm text-gray-600 mb-1">
+                            <h3 className="text-lg font-semibold text-fg">{post.title}</h3>
+                            <p className="mb-1 text-sm text-fg-muted">
                                 {post.slug} — {post.category?.name}
                             </p>
-                            <p className="text-gray-800">{post.content.slice(0, 100)}...</p>
+                            <p className="text-fg">{post.content.slice(0, 100)}...</p>
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-wrap gap-2 sm:flex-col">
                             <button
                                 className="btn-secondary"
                                 onClick={() => router.push(`/admin/posts/${post._id}`)}

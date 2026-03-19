@@ -66,51 +66,55 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
 
     return (
         <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Hotspot Products</h3>
+      <div className="space-y-1">
+        <p className="meta-label">Hotspot editor</p>
+        <h3 className="text-lg font-semibold text-fg">Hotspot Products</h3>
+      </div>
 
       {/* Link Input */}
-      <div className="flex gap-2">
+      <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
         <input
           placeholder="Paste product link"
           value={linkInput}
           onChange={(e) => setLinkInput(e.target.value)}
-          className="input flex-1"
+          className="input"
         />
-        <button onClick={() => handleScrape("primary")} className="btn-secondary">
+        <button type="button" onClick={() => handleScrape("primary")} className="btn-secondary">
           Add as Primary
         </button>
-        <button onClick={() => handleScrape("related")} className="btn">
+        <button type="button" onClick={() => handleScrape("related")} className="btn">
           + Related
         </button>
       </div>
 
       {/* Primary Item */}
       {hotspot.primary && (
-        <div className="border p-4 rounded bg-white shadow space-y-2">
-          <h4 className="font-semibold">Primary Product</h4>
+        <div className="admin-subcard space-y-3 p-4">
+          <h4 className="font-semibold text-fg">Primary Product</h4>
           <input
             value={hotspot.primary.title}
             onChange={(e) => updateItem("title", e.target.value, true)}
             placeholder="Title"
-            className="input w-full"
+            className="input"
           />
           <input
             value={hotspot.primary.image}
             onChange={(e) => updateItem("image", e.target.value, true)}
             placeholder="Image URL"
-            className="input w-full"
+            className="input"
           />
           <input
             value={hotspot.primary.link}
             onChange={(e) => updateItem("link", e.target.value, true)}
             placeholder="Link"
-            className="input w-full"
+            className="input"
           />
           {hotspot.primary.image && (
+            // eslint-disable-next-line @next/next/no-img-element -- Admin hotspot editing previews arbitrary scraped or manual image URLs.
             <img
               src={hotspot.primary.image}
               alt={hotspot.primary.title}
-              className="w-24 h-24 object-cover rounded"
+              className="h-24 w-24 rounded-lg border border-border object-cover"
             />
           )}
         </div>
@@ -119,15 +123,15 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
       {/* Related Items */}
       {hotspot.related.length > 0 && (
         <div className="space-y-4">
-          <h4 className="font-semibold">Related Products</h4>
+          <h4 className="font-semibold text-fg">Related Products</h4>
           {hotspot.related.map((item, index) => (
             <div
               key={index}
-              className="border p-4 rounded bg-white shadow space-y-2 relative"
+              className="admin-subcard relative space-y-3 p-4"
             >
               <button
                 type="button"
-                className="absolute top-1 right-1 text-red-500 text-sm"
+                className="quiet-action absolute right-2 top-2 min-h-8 px-2 text-danger"
                 onClick={() => deleteRelatedItem(index)}
               >
                 ✕
@@ -136,25 +140,26 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
                 value={item.title}
                 onChange={(e) => updateItem("title", e.target.value, false, index)}
                 placeholder="Title"
-                className="input w-full"
+                className="input"
               />
               <input
                 value={item.image}
                 onChange={(e) => updateItem("image", e.target.value, false, index)}
                 placeholder="Image URL"
-                className="input w-full"
+                className="input"
               />
               <input
                 value={item.link}
                 onChange={(e) => updateItem("link", e.target.value, false, index)}
                 placeholder="Link"
-                className="input w-full"
+                className="input"
               />
               {item.image && (
+                // eslint-disable-next-line @next/next/no-img-element -- Admin hotspot editing previews arbitrary scraped or manual image URLs.
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-24 h-24 object-cover rounded"
+                  className="h-24 w-24 rounded-lg border border-border object-cover"
                 />
               )}
             </div>
@@ -162,7 +167,7 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
         </div>
       )}
 
-      <button onClick={onDelete} className="btn-danger mt-2">
+      <button type="button" onClick={onDelete} className="btn-danger mt-2">
         Delete This Hotspot
       </button>
     </div>

@@ -56,81 +56,90 @@ export default function PostForm({
     }
 
     return (
-        <div className="max-w-5xl mx-auto space-y-6 py-8">
-            <h2 className="text-2xl font-bold">{submitLabel} Post</h2>
-            <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6">
-                <div className="flex-1 space-y-4">
+        <div className="mx-auto max-w-5xl space-y-6 py-8">
+            <div className="space-y-2">
+                <p className="meta-label">Admin editor</p>
+                <h2 className="text-2xl font-semibold tracking-[-0.02em] text-fg">{submitLabel} Post</h2>
+            </div>
+            <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <div className="space-y-4">
                     {form.image && (
+                        // eslint-disable-next-line @next/next/no-img-element -- Admin preview accepts arbitrary remote image URLs during editing.
                         <img
                             src={form.image}
                             alt="PostPreview"
-                            className="w-full rounded shadow"
+                            className="admin-card w-full object-cover"
                         />
                     )}
-                    <button
-                        type="button"
-                        className="border border-dashed border-gray-400 px-4 py-2 rounded text-sm"
-                        onClick={() => setShowHotspotModal(true)}
-                    >
-                        {hasHotspots ? "Edit Hotspots" : "+ Add Hotspot"}
-                    </button>
+                    <div className="admin-card space-y-3 p-4 md:p-5">
+                        <div className="space-y-1">
+                            <p className="meta-label">Lead image</p>
+                            <p className="text-sm leading-6 text-fg-muted">
+                                Add an image first, then place and edit hotspots for public product notes.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            className="btn-secondary w-full sm:w-auto"
+                            onClick={() => setShowHotspotModal(true)}
+                        >
+                            {hasHotspots ? "Edit Hotspots" : "+ Add Hotspot"}
+                        </button>
+                    </div>
                 </div>
-                <div className="flex-1 space-y-4">
-                    <input
-                        name="title"
-                        placeholder="Title"
-                        value={form.title}
-                        onChange={handleChange}
-                        className="input w-full"
-                        required
-                    />
-                    <input
-                        name="slug"
-                        placeholder="Slug"
-                        value={form.slug}
-                        onChange={handleChange}
-                        className="input w-full"
-                        required
-                    />
-                    <textarea
-                        name="content"
-                        placeholder="Content"
-                        value={form.content}
-                        onChange={handleChange}
-                        className="textarea w-full"
-                        rows={6}
-                        required
-                    />
-                    <input
-                        name="image"
-                        placeholder="Image URL"
-                        value={form.image}
-                        onChange={handleChange}
-                        className="input w-full"
-                        required
-                    />
-                    <select
-                        value={selectedCategoryId}
-                        onChange={(e) => {
-                            setSelectedCategoryId(e.target.value);
-                            setForm((prev) => ({ ...prev, category: e.target.value }));
-                        }}
-                        className="border p-2 rounded w-full"
-                        required
-                    >
-                        <option value="">Select a category</option>
-                        {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-4 py-2 my-2 rounded"
-                    >
-                        Save
-                    </button>
+                <div className="admin-card space-y-4 p-4 md:p-5">
+                    <div className="space-y-1">
+                        <p className="meta-label">Post details</p>
+                        <p className="text-sm leading-6 text-fg-muted">Fill in the core editorial fields before saving.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label htmlFor="admin-post-title" className="text-sm font-medium text-fg-muted">Title</label>
+                            <input id="admin-post-title" name="title" placeholder="Title" value={form.title} onChange={handleChange} className="input" required />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="admin-post-slug" className="text-sm font-medium text-fg-muted">Slug</label>
+                            <input id="admin-post-slug" name="slug" placeholder="Slug" value={form.slug} onChange={handleChange} className="input" required />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="admin-post-content" className="text-sm font-medium text-fg-muted">Content</label>
+                            <textarea id="admin-post-content" name="content" placeholder="Content" value={form.content} onChange={handleChange} className="textarea" rows={8} required />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="admin-post-image" className="text-sm font-medium text-fg-muted">Image URL</label>
+                            <input id="admin-post-image" name="image" placeholder="Image URL" value={form.image} onChange={handleChange} className="input" required />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="admin-post-category" className="text-sm font-medium text-fg-muted">Category</label>
+                            <select
+                                id="admin-post-category"
+                                value={selectedCategoryId}
+                                onChange={(e) => {
+                                    setSelectedCategoryId(e.target.value);
+                                    setForm((prev) => ({ ...prev, category: e.target.value }));
+                                }}
+                                className="select"
+                                required
+                            >
+                                <option value="">Select a category</option>
+                                {categories.map((cat) => (
+                                    <option key={cat._id} value={cat._id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-between">
+                        <button type="button" onClick={() => router.push("/admin")} className="btn-secondary">
+                            Return to Dashboard
+                        </button>
+                        <button type="submit" className="btn-primary">
+                            Save
+                        </button>
+                    </div>
                 </div>
             </form>
             {showHotspotModal && form.image && (
@@ -144,12 +153,6 @@ export default function PostForm({
                     onClose={() => setShowHotspotModal(false)}
                 />
             )}
-            <button
-                onClick={() => router.push("/admin")}
-                className="bg-blue-600 text-white px-4 py-2 my-2 rounded"
-            >
-                Return to Dashboard
-            </button>
         </div>
     )
 }

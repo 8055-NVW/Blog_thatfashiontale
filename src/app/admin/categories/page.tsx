@@ -60,27 +60,39 @@ export default function CategoryDashboard() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Manage Categories</h1>
+        <div className="mx-auto max-w-2xl space-y-5 p-4">
+            <div className="space-y-1">
+                <p className="meta-label">Admin editor</p>
+                <h1 className="text-2xl font-semibold tracking-[-0.02em] text-fg">Manage Categories</h1>
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 border p-4 mb-6 rounded">
-                <input name="name" placeholder="Name" value={form.name} onChange={handleChange} className="input" required />
-                <input name="slug" placeholder="Slug" value={form.slug} onChange={handleChange} className="input" required />
-                <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} className="textarea" required />
+            <form onSubmit={handleSubmit} className="admin-card space-y-4 p-4 md:p-5">
+                <div className="space-y-2">
+                    <label htmlFor="admin-category-name" className="text-sm font-medium text-fg-muted">Name</label>
+                    <input id="admin-category-name" name="name" placeholder="Name" value={form.name} onChange={handleChange} className="input" required />
+                </div>
+                <div className="space-y-2">
+                    <label htmlFor="admin-category-slug" className="text-sm font-medium text-fg-muted">Slug</label>
+                    <input id="admin-category-slug" name="slug" placeholder="Slug" value={form.slug} onChange={handleChange} className="input" required />
+                </div>
+                <div className="space-y-2">
+                    <label htmlFor="admin-category-description" className="text-sm font-medium text-fg-muted">Description</label>
+                    <textarea id="admin-category-description" name="description" placeholder="Description" value={form.description} onChange={handleChange} className="textarea" required />
+                </div>
                 <button type="submit" className="btn">{editingId ? 'Update' : 'Add'} Category</button>
             </form>
             {loading ?
                 <p>Loading...</p>
                 :
-                <ul>
+                <ul className="space-y-3">
                     {categories.map((cat) => (
-                        <li key={cat._id} className="border-b py-2 flex justify-between items-center">
+                        <li key={cat._id} className="admin-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <strong>{cat.name}</strong> <small className="text-gray-500">({cat.slug})</small>
-                                <p>{cat.description}</p>
+                                <strong className="text-fg">{cat.name}</strong> <small className="text-fg-subtle">({cat.slug})</small>
+                                <p className="mt-1 text-sm leading-6 text-fg-muted">{cat.description}</p>
                             </div>
-                            <div className="flex gap-2">
-                                <button className="btn-sm" onClick={() => {
+                            <div className="flex flex-wrap gap-2">
+                                <button type="button" className="btn-sm" onClick={() => {
                                     setForm({
                                         name: cat.name,
                                         slug: cat.slug,
@@ -90,15 +102,16 @@ export default function CategoryDashboard() {
                                 }}>
                                     Edit
                                 </button>
-                                <button className="btn-sm text-red-500" onClick={() => handleDelete(cat._id)}>Delete</button>
+                                <button type="button" className="btn-danger btn-sm" onClick={() => handleDelete(cat._id)}>Delete</button>
                             </div>
                         </li>
                     ))}
                 </ul>
             }
             <button
+                type="button"
                 onClick={() => router.push("/admin")}
-                className="bg-blue-600 text-white px-4 py-2 my-2 rounded"
+                className="btn-secondary"
             >
                 Return to Dashboard
             </button>
