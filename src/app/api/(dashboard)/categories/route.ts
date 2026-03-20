@@ -75,15 +75,21 @@ export const PATCH = async (request: Request) => {
     try {
         const body = await request.json();
         await connect();
-        const { identifier, newName, newSlug, newDescription } = body;
-        const filter = { slug: identifier };
+        const { categoryId, newName, newSlug, newDescription } = body;
+
+        if (!categoryId) {
+            return new NextResponse(
+                JSON.stringify({ message: "Category id is required" }),
+                { status: 400 }
+            );
+        }
 
         const update = {
             name: newName,
             slug: newSlug,
             description: newDescription,
         };
-        const updatedCategory = await Category.findOneAndUpdate(filter, update, {
+        const updatedCategory = await Category.findByIdAndUpdate(categoryId, update, {
             new: true,
         });
 

@@ -26,13 +26,12 @@ export async function getCategories(
 export async function addOrUpdateCategory(
     form: { name: string; slug: string; description: string },
     editingId?: string,
-    categories?: { _id: string; slug: string }[]
 ) {
     const method = editingId ? "PATCH" : "POST";
 
     const payload = editingId
         ? {
-            identifier: categories?.find((category) => category._id === editingId)?.slug,
+            categoryId: editingId,
             newName: form.name,
             newSlug: form.slug,
             newDescription: form.description,

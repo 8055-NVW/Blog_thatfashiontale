@@ -47,7 +47,7 @@ export default function CategoryDashboard() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await addOrUpdateCategory(form, editingId, categories);
+            await addOrUpdateCategory(form, editingId);
             await fetchCategories();
             setForm({ name: "", slug: "", description: "" });
             setEditingId(undefined);
