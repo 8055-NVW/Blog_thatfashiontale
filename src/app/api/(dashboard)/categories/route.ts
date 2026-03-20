@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Types } from "mongoose";
 import connect from "@/lib/mongoose";
 import Category from "@/models/Category";
 import Post from "@/models/Post";
@@ -77,9 +78,16 @@ export const PATCH = async (request: Request) => {
         await connect();
         const { categoryId, newName, newSlug, newDescription } = body;
 
-        if (!categoryId) {
+        if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
             return new NextResponse(
-                JSON.stringify({ message: "Category id is required" }),
+                JSON.stringify({ message: "A valid category id is required" }),
+                { status: 400 }
+            );
+        }
+
+        if (!newName || !newSlug || !newDescription) {
+            return new NextResponse(
+                JSON.stringify({ message: "Name, slug, and description are required" }),
                 { status: 400 }
             );
         }
