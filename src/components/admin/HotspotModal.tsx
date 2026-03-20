@@ -1,7 +1,7 @@
 "use client";
 
 import { getTrapWrapTarget, HOTSPOT_DIALOG_FOCUSABLE_SELECTOR } from "@/lib/hotspotDialogFocus";
-import { getHotspotValidation, prepareHotspotsForSave } from "@/lib/adminHotspotAuthoring";
+import { getHotspotValidation, prepareHotspotsForSave } from "@/features/admin/lib/adminHotspotAuthoring";
 import { useEffect, useRef, useState } from "react";
 import { HotspotType } from "@/types/HotspotType";
 import HotspotEditor from "./HotspotEditor";

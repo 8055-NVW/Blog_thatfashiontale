@@ -2,7 +2,7 @@
 
 import AdminNotice from "@/components/admin/AdminNotice";
 import PostForm from "@/components/admin/PostForm";
-import { extractApiMessage } from "@/lib/adminFeedback";
+import { extractApiMessage } from "@/features/admin/lib/adminFeedback";
 import { getCategories } from "@/lib/api/categories";
 import { getPost } from "@/lib/api/posts";
 import { CategoryWithId } from "@/types/CategoryType";

@@ -1,4 +1,4 @@
-import type { HotspotItem, HotspotType } from "../types/HotspotType";
+import type { HotspotItem, HotspotType } from "@/types/HotspotType";
 
 function hasValidLink(item: HotspotItem | null | undefined) {
   return Boolean(item?.link?.trim());

@@ -1,5 +1,5 @@
 import { CategoryWithId } from "@/types/CategoryType";
-import { extractApiMessage } from "@/lib/adminFeedback";
+import { extractApiMessage } from "@/features/admin/lib/adminFeedback";
 import { resolveApiUrl } from "./url";
 
 type GetCategoriesOptions = {

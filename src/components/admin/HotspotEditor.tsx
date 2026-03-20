@@ -1,7 +1,7 @@
 "use client"
 
-import { extractApiMessage } from "@/lib/adminFeedback";
-import { getHotspotValidation } from "@/lib/adminHotspotAuthoring";
+import { extractApiMessage } from "@/features/admin/lib/adminFeedback";
+import { getHotspotValidation } from "@/features/admin/lib/adminHotspotAuthoring";
 import { useId, useState } from "react"
 import { HotspotType, HotspotItem } from "@/types/HotspotType"
 

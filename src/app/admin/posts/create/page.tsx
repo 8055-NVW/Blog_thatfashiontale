@@ -2,7 +2,7 @@
 
 import AdminNotice from "@/components/admin/AdminNotice";
 import PostForm from "@/components/admin/PostForm";
-import { extractApiMessage } from "@/lib/adminFeedback";
+import { extractApiMessage } from "@/features/admin/lib/adminFeedback";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCategories } from "@/lib/api/categories";

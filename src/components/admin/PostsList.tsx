@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PostWithCategory } from "@/types/PostViewType";
 import { deletePost, getPosts } from "@/lib/api/posts";
-import { extractApiMessage } from "@/lib/adminFeedback";
+import { extractApiMessage } from "@/features/admin/lib/adminFeedback";
 
 type Props = {
     categoryId?: string;
