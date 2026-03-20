@@ -10,8 +10,17 @@ const toneClasses: Record<NonNullable<AdminNoticeProps["tone"]>, string> = {
 };
 
 export default function AdminNotice({ tone = "info", message }: AdminNoticeProps) {
+  const accessibilityProps =
+    tone === "error"
+      ? { role: "alert", "aria-live": "assertive" as const }
+      : { role: "status", "aria-live": "polite" as const };
+
   return (
-    <p className={`rounded-lg border px-3 py-2 text-sm leading-6 ${toneClasses[tone]}`}>
+    <p
+      {...accessibilityProps}
+      aria-atomic="true"
+      className={`rounded-lg border px-3 py-2 text-sm leading-6 ${toneClasses[tone]}`}
+    >
       {message}
     </p>
   );

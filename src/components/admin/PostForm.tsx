@@ -2,6 +2,7 @@ import { CategoryWithId } from "@/types/CategoryType";
 import { PostFormType } from "@/types/PostType"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AdminNotice from "./AdminNotice";
 import HotspotModal from "./HotspotModal";
 
 type PostFormProps = {
@@ -35,6 +36,7 @@ export default function PostForm({
     const router = useRouter();
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
     const [showHotspotModal, setShowHotspotModal] = useState(false);
+    const [validationError, setValidationError] = useState<string | null>(null);
     const hasHotspots = form.hotspots && form.hotspots.length > 0
     const hasImage = Boolean(form.image.trim());
 
@@ -45,6 +47,7 @@ export default function PostForm({
                 ? initialForm.category
                 : initialForm.category._id
         );
+        setValidationError(null);
     }, [initialForm]);
 
     const handleChange = (
@@ -56,9 +59,10 @@ export default function PostForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedCategoryId) {
-            alert("Missing category");
+            setValidationError("Select a category before saving this post.");
             return;
         }
+        setValidationError(null);
         await onSubmit(form, selectedCategoryId);
     }
 
@@ -134,6 +138,7 @@ export default function PostForm({
                                 value={selectedCategoryId}
                                 onChange={(e) => {
                                     setSelectedCategoryId(e.target.value);
+                                    setValidationError(null);
                                     setForm((prev) => ({ ...prev, category: e.target.value }));
                                 }}
                                 className="select"
@@ -150,8 +155,9 @@ export default function PostForm({
                         </div>
                     </div>
 
-                    {submitError ? <p className="rounded-lg border border-danger/35 bg-danger/8 px-3 py-2 text-sm text-danger">{submitError}</p> : null}
-                    {!submitError && submitSuccess ? <p className="rounded-lg border border-success/35 bg-success/10 px-3 py-2 text-sm text-success">{submitSuccess}</p> : null}
+                    {validationError ? <AdminNotice tone="error" message={validationError} /> : null}
+                    {submitError ? <AdminNotice tone="error" message={submitError} /> : null}
+                    {!submitError && submitSuccess ? <AdminNotice tone="success" message={submitSuccess} /> : null}
 
                     <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-between">
                         <button type="button" onClick={() => router.push("/admin")} className="btn-secondary" disabled={isSubmitting}>
