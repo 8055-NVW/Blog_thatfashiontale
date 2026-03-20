@@ -1,8 +1,14 @@
 import { CategoryWithId } from "@/types/CategoryType";
+import { extractApiMessage } from "@/lib/adminFeedback";
 import { resolveApiUrl } from "./url";
 
 type GetCategoriesOptions = {
     baseUrl?: string;
+}
+
+async function getMutationError(response: Response, fallbackMessage: string) {
+    const payload = await response.json().catch(() => null);
+    return extractApiMessage(payload, fallbackMessage);
 }
 
 export async function getCategories(
@@ -39,7 +45,10 @@ export async function addOrUpdateCategory(
         body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error("Failed to save category");
+    if (!res.ok) {
+        throw new Error(await getMutationError(res, "Failed to save category"));
+    }
+
     return res.json();
 }
 
@@ -49,5 +58,8 @@ export async function deleteCategory(categoryId: string) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ categoryId }),
     });
-    if (!res.ok) throw new Error("Failed to delete category");
+
+    if (!res.ok) {
+        throw new Error(await getMutationError(res, "Failed to delete category"));
+    }
 }

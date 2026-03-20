@@ -2,7 +2,6 @@
 
 import AdminNotice from "@/components/admin/AdminNotice";
 import PublicConfirmDialog from "@/components/post-interactions/PublicConfirmDialog";
-import { extractApiMessage } from "@/lib/adminFeedback";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { addOrUpdateCategory, deleteCategory, getCategories } from "@/lib/api/categories";
@@ -56,7 +55,7 @@ export default function CategoryDashboard() {
             setError(null);
         } catch (error: unknown) {
             console.error(error)
-            setError(extractApiMessage(error instanceof Error ? error.message : null, "Failed to save category."));
+            setError(getErrorMessage(error));
         }
     }
 

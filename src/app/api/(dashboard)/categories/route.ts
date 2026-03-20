@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import connect from "@/lib/mongoose";
 import Category from "@/models/Category";
+import Post from "@/models/Post";
 import { auth } from "@/auth";
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
 
 //VIEW categories
 export const GET = async () => {
@@ -9,8 +14,8 @@ export const GET = async () => {
         await connect();
         const categories = await Category.find();
         return new NextResponse(JSON.stringify(categories), { status: 200 });
-    } catch (error: any) {
-        return new NextResponse("Failed to get categories -" + error.message, {
+    } catch (error: unknown) {
+        return new NextResponse("Failed to get categories -" + getErrorMessage(error), {
             status: 500,
         });
     }
@@ -48,9 +53,9 @@ export const POST = async (request: Request) => {
             }),
             { status: 201 }
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify(`Failed to create category - ${error.message}`),
+            JSON.stringify(`Failed to create category - ${getErrorMessage(error)}`),
             { status: 500 }
         );
     }
@@ -96,9 +101,9 @@ export const PATCH = async (request: Request) => {
             }),
             { status: 200 }
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify(`Failed to update category - ${error.message}`),
+            JSON.stringify(`Failed to update category - ${getErrorMessage(error)}`),
             { status: 500 }
         );
     }
@@ -125,7 +130,25 @@ export const DELETE = async (request: Request) => {
             });
         }
 
+        const categoryInUse = await Post.exists({ category: categoryId });
+
+        if (categoryInUse) {
+            return new NextResponse(
+                JSON.stringify({
+                    message: "Cannot delete this category because existing posts still use it.",
+                }),
+                { status: 409 }
+            );
+        }
+
         const deletedCategory = await Category.findByIdAndDelete(categoryId);
+
+        if (!deletedCategory) {
+            return new NextResponse(
+                JSON.stringify({ message: "Category not found" }),
+                { status: 404 }
+            );
+        }
 
         return new NextResponse(
             JSON.stringify({
@@ -134,9 +157,9 @@ export const DELETE = async (request: Request) => {
             }),
             { status: 200 }
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         return new NextResponse(
-            JSON.stringify(`Failed to update category - ${error.message}`),
+            JSON.stringify(`Failed to delete category - ${getErrorMessage(error)}`),
             { status: 500 }
         );
     }
