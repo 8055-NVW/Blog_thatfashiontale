@@ -2,7 +2,7 @@
 
 import { extractApiMessage } from "@/lib/adminFeedback";
 import { getHotspotValidation } from "@/lib/adminHotspotAuthoring";
-import { useState } from "react"
+import { useId, useState } from "react"
 import { HotspotType, HotspotItem } from "@/types/HotspotType"
 
 interface Props {
@@ -12,10 +12,10 @@ interface Props {
 }
 
 export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
-
     const [linkInput, setLinkInput] = useState("");
     const validation = getHotspotValidation(hotspot);
     const [scrapeError, setScrapeError] = useState<string | null>(null);
+    const idBase = useId();
 
     const handleScrape = async (target: "primary" | "related") => {
     try {
@@ -90,12 +90,18 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
 
       {/* Link Input */}
       <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto]">
+        <div className="space-y-2 md:col-span-1">
+          <label htmlFor={`${idBase}-link-input`} className="text-sm font-medium text-fg-muted">
+            Product link
+          </label>
         <input
+          id={`${idBase}-link-input`}
           placeholder="Paste product link"
           value={linkInput}
           onChange={(e) => setLinkInput(e.target.value)}
           className="input"
         />
+        </div>
         <button type="button" onClick={() => handleScrape("primary")} className="btn-secondary w-full md:w-auto">
           Add as Primary
         </button>
@@ -117,24 +123,36 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
             <h4 className="font-semibold text-fg">Primary Product</h4>
             <p className="text-sm text-fg-muted">This is the only item shown in the public hotspot modal right now.</p>
           </div>
-          <input
-            value={hotspot.primary.title}
-            onChange={(e) => updateItem("title", e.target.value, true)}
-            placeholder="Title"
-            className="input"
-          />
-          <input
-            value={hotspot.primary.image}
-            onChange={(e) => updateItem("image", e.target.value, true)}
-            placeholder="Image URL"
-            className="input"
-          />
-          <input
-            value={hotspot.primary.link}
-            onChange={(e) => updateItem("link", e.target.value, true)}
-            placeholder="Link"
-            className="input"
-          />
+          <div className="space-y-2">
+            <label htmlFor={`${idBase}-primary-title`} className="text-sm font-medium text-fg-muted">Primary title</label>
+            <input
+              id={`${idBase}-primary-title`}
+              value={hotspot.primary.title}
+              onChange={(e) => updateItem("title", e.target.value, true)}
+              placeholder="Title"
+              className="input"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor={`${idBase}-primary-image`} className="text-sm font-medium text-fg-muted">Primary image URL</label>
+            <input
+              id={`${idBase}-primary-image`}
+              value={hotspot.primary.image}
+              onChange={(e) => updateItem("image", e.target.value, true)}
+              placeholder="Image URL"
+              className="input"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor={`${idBase}-primary-link`} className="text-sm font-medium text-fg-muted">Primary link</label>
+            <input
+              id={`${idBase}-primary-link`}
+              value={hotspot.primary.link}
+              onChange={(e) => updateItem("link", e.target.value, true)}
+              placeholder="Link"
+              className="input"
+            />
+          </div>
           {hotspot.primary.image && (
             // eslint-disable-next-line @next/next/no-img-element -- Admin hotspot editing previews arbitrary scraped or manual image URLs.
             <img
@@ -158,31 +176,49 @@ export default function HotspotEditor({ hotspot, onChange, onDelete} : Props) {
               key={index}
               className="admin-subcard relative space-y-3 p-4 md:p-5"
             >
+              <div className="space-y-1 pr-10">
+                <h5 className="text-sm font-medium text-fg">Related product {index + 1}</h5>
+                <p className="text-sm text-fg-muted">Optional supporting item for this hotspot.</p>
+              </div>
               <button
                 type="button"
                 className="quiet-action absolute right-2 top-2 min-h-8 px-2 text-danger"
                 onClick={() => deleteRelatedItem(index)}
+                aria-label={`Remove related product ${index + 1}`}
+                title={`Remove related product ${index + 1}`}
               >
                 ✕
               </button>
-              <input
-                value={item.title}
-                onChange={(e) => updateItem("title", e.target.value, false, index)}
-                placeholder="Title"
-                className="input"
-              />
-              <input
-                value={item.image}
-                onChange={(e) => updateItem("image", e.target.value, false, index)}
-                placeholder="Image URL"
-                className="input"
-              />
-              <input
-                value={item.link}
-                onChange={(e) => updateItem("link", e.target.value, false, index)}
-                placeholder="Link"
-                className="input"
-              />
+              <div className="space-y-2">
+                <label htmlFor={`${idBase}-related-title-${index}`} className="text-sm font-medium text-fg-muted">Related title</label>
+                <input
+                  id={`${idBase}-related-title-${index}`}
+                  value={item.title}
+                  onChange={(e) => updateItem("title", e.target.value, false, index)}
+                  placeholder="Title"
+                  className="input"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor={`${idBase}-related-image-${index}`} className="text-sm font-medium text-fg-muted">Related image URL</label>
+                <input
+                  id={`${idBase}-related-image-${index}`}
+                  value={item.image}
+                  onChange={(e) => updateItem("image", e.target.value, false, index)}
+                  placeholder="Image URL"
+                  className="input"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor={`${idBase}-related-link-${index}`} className="text-sm font-medium text-fg-muted">Related link</label>
+                <input
+                  id={`${idBase}-related-link-${index}`}
+                  value={item.link}
+                  onChange={(e) => updateItem("link", e.target.value, false, index)}
+                  placeholder="Link"
+                  className="input"
+                />
+              </div>
               {item.image && (
                 // eslint-disable-next-line @next/next/no-img-element -- Admin hotspot editing previews arbitrary scraped or manual image URLs.
                 <img

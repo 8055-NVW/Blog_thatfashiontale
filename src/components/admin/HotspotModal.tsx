@@ -26,6 +26,14 @@ export default function HotspotModal({
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const saveState = prepareHotspotsForSave(hotspots);
 
+    const addHotspot = (x: number, y: number) => {
+        const newHotspot: HotspotType = { x, y, primary: null, related: [] };
+        setHotspots((currentHotspots) => {
+            setActiveIndex(currentHotspots.length);
+            return [...currentHotspots, newHotspot];
+        });
+    };
+
     useEffect(() => {
         const previousOverflow = document.body.style.overflow;
         const dialogElement = dialogRef.current;
@@ -93,9 +101,7 @@ export default function HotspotModal({
         const x = (e.clientX - rect.left) / rect.width;
         const y = (e.clientY - rect.top) / rect.height;
 
-        const newHotspot: HotspotType = { x, y, primary: null, related: [] };
-        setHotspots([...hotspots, newHotspot]);
-        setActiveIndex(hotspots.length);
+        addHotspot(x, y);
     };
 
     const updateHotspot = (index: number, updated: HotspotType) => {
@@ -127,9 +133,12 @@ export default function HotspotModal({
 
                     <div className="grid gap-3 text-sm leading-6 text-fg-muted lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                         <p>
-                            Click the image to place a marker. Each saved hotspot needs a primary item with a link.
+                            Click the image to place a marker, or use the keyboard button to add one at the image center. Each saved hotspot needs a primary item with a link.
                         </p>
                         <div className="flex flex-wrap gap-2">
+                            <button type="button" className="btn-secondary" onClick={() => addHotspot(0.5, 0.5)}>
+                                Add marker at center
+                            </button>
                             <span className="admin-subcard px-3 py-2 text-sm text-fg-muted">{hotspots.length} draft marker{hotspots.length === 1 ? "" : "s"}</span>
                             <span className="admin-subcard px-3 py-2 text-sm text-fg-muted">{saveState.hotspots.length} ready to save</span>
                         </div>
