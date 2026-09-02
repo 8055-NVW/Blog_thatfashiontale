@@ -38,7 +38,7 @@ const MagicLinkEmail = ({ magicLink }: MagicLinkEmailProps) => (
                         </Link>
                     </Text>
                     <Text style={paragraph}>
-                        If you didn't request this, you can safely ignore it.
+                        If you didn&apos;t request this, you can safely ignore it.
                     </Text>
                 </Section>
                 <Text style={paragraph}>
