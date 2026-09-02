@@ -9,16 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/core": "^0.39.1",
-    "@auth/mongodb-adapter": "^3.9.1",
+    "@auth/core": "0.41.3",
+    "@auth/mongodb-adapter": "3.11.3",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@react-email/components": "^0.0.41",
     "@react-email/render": "^1.1.2",
     "mongodb": "^6.21.0",
     "mongoose": "^8.13.2",
-    "next": "15.2.4",
-    "next-auth": "^5.0.0-beta.28",
-    "nodemailer": "^6.10.1",
+    "next": "15.5.24",
+    "next-auth": "5.0.0-beta.32",
     "open-graph-scraper": "^6.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -32,7 +31,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.2.4",
+    "eslint-config-next": "15.5.24",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
