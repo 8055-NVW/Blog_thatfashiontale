@@ -37,7 +37,7 @@ export const GET = async (request: NextRequest, context: PostRouteContext) => {
                 : { slug: postIdentifier }
         )
             .populate("category", "name slug")
-            .populate("user", "name email")
+            .populate("user", "name")
 
         if (!post) {
             return new NextResponse(
