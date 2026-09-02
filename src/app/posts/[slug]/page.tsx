@@ -1,3 +1,4 @@
+import { env } from "@/config/env";
 import { getPublicPostBySlug } from "@/lib/api/posts";
 import { auth } from "@/auth";
 import { applyDiscussionLikeState } from "@/components/post-interactions/discussionLikeState";
@@ -7,11 +8,12 @@ import PostDiscussion from "@/components/post-interactions/PostDiscussion";
 import { buildPostLikeCountLookup, buildPostLikeLookup } from "@/lib/likes/postLike";
 import connect from "@/lib/mongoose";
 import Like from "@/models/Like";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { DiscussionComment } from "@/components/post-interactions/types";
 import { Types } from "mongoose";
 import PostHotspots from "@/components/posts/PostHotspots";
+
+export const dynamic = "force-dynamic";
 
 type PostDetailPageProps = {
     params: Promise<{
@@ -134,11 +136,7 @@ async function getPostSaveState(postId: string, userId?: string) {
 
 export default async function PostDetailPage({ params }: PostDetailPageProps) {
     const { slug } = await params;
-    const requestHeaders = await headers();
-    const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
-    const protocol = requestHeaders.get("x-forwarded-proto")
-        ?? (host?.includes("localhost") || host?.startsWith("127.0.0.1") ? "http" : "https");
-    const baseUrl = host ? `${protocol}://${host}` : undefined;
+    const baseUrl = new URL(env.AUTH_URL).origin;
     const session = await auth();
 
     let post;
