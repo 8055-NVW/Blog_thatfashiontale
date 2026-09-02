@@ -49,7 +49,7 @@ export const GET = async (request: NextRequest) => {
 
     const posts = await Post.find(filter)
       .populate("category", "name slug")
-      .populate("user", "name email");
+      .populate("user", "name");
 
     return new NextResponse(JSON.stringify({ posts }), { status: 200 });
   } catch (error: unknown) {
