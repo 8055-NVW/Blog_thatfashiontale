@@ -1,0 +1,180 @@
+import { NextResponse } from "next/server";
+import { Types } from "mongoose";
+import connect from "@/lib/mongoose";
+import Category from "@/models/Category";
+import Post from "@/models/Post";
+import { auth } from "@/auth";
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
+//VIEW categories
+export const GET = async () => {
+    try {
+        await connect();
+        const categories = await Category.find();
+        return new NextResponse(JSON.stringify(categories), { status: 200 });
+    } catch (error: unknown) {
+        return new NextResponse("Failed to get categories -" + getErrorMessage(error), {
+            status: 500,
+        });
+    }
+};
+
+//CREATE category
+export const POST = async (request: Request) => {
+    const session = await auth();
+
+    if (!session?.user?.is_superuser) {
+        return new NextResponse(JSON.stringify({ message: "Unauthorized" }), {
+            status: 403,
+        });
+    }
+
+    try {
+        const body = await request.json();
+        const { name, slug, description } = body;
+        await connect();
+
+        if (!name || !slug || !description) {
+            return new NextResponse(
+                JSON.stringify({ message: "Missing required fields" }),
+                { status: 400 }
+            );
+        }
+
+        const newCategory = new Category({ name, slug, description });
+        await newCategory.save();
+
+        return new NextResponse(
+            JSON.stringify({
+                message: "Category successfully created",
+                category: newCategory,
+            }),
+            { status: 201 }
+        );
+    } catch (error: unknown) {
+        return new NextResponse(
+            JSON.stringify(`Failed to create category - ${getErrorMessage(error)}`),
+            { status: 500 }
+        );
+    }
+};
+
+//UPDATE Category
+export const PATCH = async (request: Request) => {
+    const session = await auth();
+
+    if (!session?.user?.is_superuser) {
+        return new NextResponse(
+            JSON.stringify({ message: "Unauthorized" }),
+            { status: 403 }
+        );
+    }
+
+    try {
+        const body = await request.json();
+        await connect();
+        const { categoryId, newName, newSlug, newDescription } = body;
+
+        if (!categoryId || !Types.ObjectId.isValid(categoryId)) {
+            return new NextResponse(
+                JSON.stringify({ message: "A valid category id is required" }),
+                { status: 400 }
+            );
+        }
+
+        if (!newName || !newSlug || !newDescription) {
+            return new NextResponse(
+                JSON.stringify({ message: "Name, slug, and description are required" }),
+                { status: 400 }
+            );
+        }
+
+        const update = {
+            name: newName,
+            slug: newSlug,
+            description: newDescription,
+        };
+        const updatedCategory = await Category.findByIdAndUpdate(categoryId, update, {
+            new: true,
+        });
+
+        if (!updatedCategory) {
+            return new NextResponse(
+                JSON.stringify({ message: "Category not found" }),
+                { status: 404 }
+            );
+        }
+
+        return new NextResponse(
+            JSON.stringify({
+                message: "Category successfully updated",
+                category: updatedCategory,
+            }),
+            { status: 200 }
+        );
+    } catch (error: unknown) {
+        return new NextResponse(
+            JSON.stringify(`Failed to update category - ${getErrorMessage(error)}`),
+            { status: 500 }
+        );
+    }
+};
+
+//DELETE category
+export const DELETE = async (request: Request) => {
+    const session = await auth();
+
+    if (!session?.user?.is_superuser) {
+        return new NextResponse(
+            JSON.stringify({ message: "Unauthorized" }),
+            { status: 403 }
+        );
+    }
+
+    try {
+        const { categoryId } = await request.json();
+        await connect();
+
+        if (!categoryId) {
+            return new NextResponse(JSON.stringify({ message: "Id not found" }), {
+                status: 400,
+            });
+        }
+
+        const categoryInUse = await Post.exists({ category: categoryId });
+
+        if (categoryInUse) {
+            return new NextResponse(
+                JSON.stringify({
+                    message: "Cannot delete this category because existing posts still use it.",
+                }),
+                { status: 409 }
+            );
+        }
+
+        const deletedCategory = await Category.findByIdAndDelete(categoryId);
+
+        if (!deletedCategory) {
+            return new NextResponse(
+                JSON.stringify({ message: "Category not found" }),
+                { status: 404 }
+            );
+        }
+
+        return new NextResponse(
+            JSON.stringify({
+                message: "Category successfully deleted",
+                category: deletedCategory,
+            }),
+            { status: 200 }
+        );
+    } catch (error: unknown) {
+        return new NextResponse(
+            JSON.stringify(`Failed to delete category - ${getErrorMessage(error)}`),
+            { status: 500 }
+        );
+    }
+};

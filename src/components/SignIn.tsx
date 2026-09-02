@@ -1,0 +1,16 @@
+import { signIn } from "@/auth"
+ 
+export const SignIn = () => {
+  return (
+    <form
+      action={async (formData) => {
+        "use server"
+        await signIn("resend", formData)
+      }}
+    >
+      <input type="text" name="email" placeholder="Email" />
+
+      <button type="submit">Sign in with Resend</button>
+    </form>
+  )
+}
